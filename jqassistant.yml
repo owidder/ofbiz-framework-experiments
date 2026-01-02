@@ -1,0 +1,6 @@
+jqassistant:
+  store:
+    embedded:
+      directory: jqassistant/store
+      bolt-port: 7688
+      database: neo4j
