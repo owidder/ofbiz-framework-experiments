@@ -1,383 +1,256 @@
-# OFBiz Neo4j Analyse - Dokumentations-Index
+# OFBiz Refactoring zu Microservices - Dokumentationsübersicht
 
-## 📊 Überblick
+Dieses Verzeichnis enthält eine umfassende Analyse und Strategie zur Umwandlung der OFBiz-Monolith-Anwendung in eine Microservices-Architektur.
 
-Diese Dokumentation enthält eine umfassende Analyse der OFBiz-Codebase basierend auf der Neo4j-Datenbank, die über jqAssistant importiert wurde. Die Analyse dient als Grundlage für die schrittweise Refaktorierung von OFBiz in eine Microservice-Architektur.
+## 📚 Dokumentationsstruktur
 
----
+### 1. Executive Summary & Übersicht
 
-## 📁 Dokumentations-Struktur
+- **[SERVICE_DECOMPOSITION_ANALYSIS.md](./SERVICE_DECOMPOSITION_ANALYSIS.md)** ⭐ **START HIER**
+  - Vollständige Analyse der OFBiz-Codebasis
+  - Service-Kandidaten und Priorisierung
+  - Abhängigkeitsanalyse zwischen Modulen
+  - Bounded Contexts nach Domain-Driven Design
+  - Phasenplan für die Migration (18-24 Monate)
+  - Risiken und Mitigationsstrategien
+  - Technologie-Stack-Empfehlungen
 
-### 1. **OFBIZ_ANALYSIS.md** - Hauptanalyse
-   - **Zweck:** Umfassende Übersicht der OFBiz-Struktur
-   - **Inhalte:**
-     - Codebase-Statistiken (343.608 Java-Elemente, 11.752 Typen)
-     - Service-Architektur-Übersicht (30+ identifizierte Services)
-     - Abhängigkeitsanalyse mit kritischen Erkenntnissen
-     - Refaktorierungsstrategie in 5 Phasen
-     - Empfohlene Architektur-Muster
-     - Metriken für Erfolg
-   - **Zielgruppe:** Architekten, Tech-Leads, Projektmanager
-   - **Lesedauer:** 20-30 Minuten
+### 2. Visualisierungen
 
-### 2. **OFBIZ_REFACTORING_GUIDE.md** - Detaillierter Implementierungsleitfaden
-   - **Zweck:** Praktischer Leitfaden für die Refaktorierung
-   - **Inhalte:**
-     - Detaillierte Analyse der Top-5 gekoppelten Services
-     - Aufspaltungs-Strategien für WebToolsServices (94 deps)
-     - Aufspaltungs-Strategien für OrderServices (83 deps)
-     - Adapter-Pattern für PaymentGatewayServices
-     - Lösungen für zirkuläre Abhängigkeiten
-     - Service-Isolation Strategie
-     - Metriken & Monitoring
-     - Implementierungs-Checkliste
-     - Risiken & Mitigation
-     - 4-Monats-Zeitplan
-   - **Zielgruppe:** Entwickler, Architekten
-   - **Lesedauer:** 30-45 Minuten
+- **[DEPENDENCY_GRAPH_VISUALIZATION.md](./DEPENDENCY_GRAPH_VISUALIZATION.md)**
+  - Mermaid-Diagramme der Modul-Abhängigkeiten
+  - Business-Module Dependency Graph
+  - Framework Dependencies
+  - Service Extraction Roadmap (Gantt)
+  - Bounded Context Map
+  - Event-Driven Architecture
+  - Saga Pattern für Order Processing
+  - Deployment Architecture
+  - Migration Phases
+  - Neo4j Cypher Queries für weitere Analysen
 
-### 3. **NEO4J_QUERIES.md** - Query-Sammlung
-   - **Zweck:** Praktische Cypher-Queries für laufende Analysen
-   - **Inhalte:**
-     - 50+ vorgefertigte Queries
-     - Service-Übersicht Queries
-     - Abhängigkeitsanalyse Queries
-     - Zirkuläre Abhängigkeiten finden
-     - Package-Analyse
-     - Refaktorierungs-Kandidaten
-     - Metriken & Qualität
-     - Spezifische Analysen (Payment, Order, Shipping)
-     - Refaktorierungs-Fortschritt tracken
-     - Export & Reporting
-   - **Zielgruppe:** Entwickler, Datenanalysten
-   - **Lesedauer:** 15-20 Minuten (zum Nachschlagen)
+### 3. Praktische Implementierungsguides
 
-### 4. **REFACTORING_STARTER_KIT.md** - Code-Templates & Checklisten
-   - **Zweck:** Schnelleinstieg in die Implementierung
-   - **Inhalte:**
-     - Maven/Gradle Dependencies
-     - Service-Interface Template
-     - Service-Implementierung Template
-     - Exception-Klasse Template
-     - Unit-Test Template
-     - Integration-Test Template
-     - Spring Configuration
-     - Migrations-Checkliste
-     - Häufige Probleme & Lösungen
-     - Monitoring & Logging
-   - **Zielgruppe:** Entwickler
-   - **Lesedauer:** 20-30 Minuten
+- **[PARTY_SERVICE_EXTRACTION_GUIDE.md](./PARTY_SERVICE_EXTRACTION_GUIDE.md)**
+  - Detaillierter Guide für den ersten Microservice
+  - Scope Definition und Entities
+  - Technische Architektur (Spring Boot)
+  - API Design mit Beispielen
+  - 3-Phasen-Migrationsstrategie
+  - Testing Strategy (Unit, Integration, E2E)
+  - Monitoring & Observability
+  - Rollback Plan
 
----
+### 4. Weitere vorhandene Dokumentation
 
-## 🎯 Kritische Erkenntnisse
+- **[OFBIZ_ANALYSIS.md](./OFBIZ_ANALYSIS.md)** - Ursprüngliche Analyse
+- **[MICROSERVICES_ARCHITECTURE.md](./MICROSERVICES_ARCHITECTURE.md)** - Architektur-Konzepte
+- **[SERVICE_EXTRACTION_CANDIDATES.md](./SERVICE_EXTRACTION_CANDIDATES.md)** - Service-Kandidaten
+- **[NEO4J_QUERIES.md](./NEO4J_QUERIES.md)** - Nützliche Queries
 
-### Top-5 Probleme
+## 🎯 Quick Start Guide
 
-| # | Problem | Kritikalität | Impact | Lösung |
-|---|---------|--------------|--------|--------|
-| 1 | **WebToolsServices** (94 Dependencies) | 🔴 KRITISCH | Monolithisch, schwer zu testen | Aufteilen in 5 spezialisierte Services |
-| 2 | **OrderServices** (83 Dependencies) | 🔴 KRITISCH | Monolithisch, viele Verantwortlichkeiten | Aufteilen in 5 spezialisierte Services |
-| 3 | **Zirkuläre Abhängigkeit** LoginServices ↔ LdapAuthenticationServices | 🔴 KRITISCH | Verhindert unabhängiges Deployment | Dependency Injection oder Event-Driven |
-| 4 | **PaymentGatewayServices** (62 Dependencies) | 🟠 HOCH | Hub-Service mit vielen Abhängigkeiten | Adapter-Pattern implementieren |
-| 5 | **EmailServices** (68 Dependencies) | 🟠 HOCH | Zu viele Verantwortlichkeiten | Aufteilen in spezialisierte Services |
+### Für Entscheidungsträger
 
-### Top-5 Chancen
+1. Lesen Sie **[SERVICE_DECOMPOSITION_ANALYSIS.md](./SERVICE_DECOMPOSITION_ANALYSIS.md)** Abschnitt 1-3
+   - Verstehen Sie die Modulstruktur
+   - Sehen Sie die Abhängigkeiten
+   - Bewerten Sie die Service-Kandidaten
 
-| # | Chance | Benefit | Aufwand |
-|---|--------|---------|---------|
-| 1 | Spezialisierte Payment-Provider isolieren | Unabhängiges Deployment | Mittel |
-| 2 | Shipping-Provider als Adapter | Einfache Integration neuer Provider | Mittel |
-| 3 | Event-Driven Architecture | Entkopplung, bessere Skalierbarkeit | Hoch |
-| 4 | Dependency Injection einführen | Bessere Testbarkeit, Flexibilität | Mittel |
-| 5 | Service-Interfaces definieren | Klare Grenzen, bessere Wartbarkeit | Niedrig |
+2. Prüfen Sie **[DEPENDENCY_GRAPH_VISUALIZATION.md](./DEPENDENCY_GRAPH_VISUALIZATION.md)**
+   - Visualisieren Sie die Komplexität
+   - Verstehen Sie die Roadmap (Gantt-Chart)
+   - Sehen Sie die Zielarchitektur
 
----
+3. Bewerten Sie Risiken und Ressourcen in **SERVICE_DECOMPOSITION_ANALYSIS.md** Abschnitt 5-7
 
-## 📈 Metriken Dashboard
+### Für Architekten
 
-### Aktuelle Situation
+1. Studieren Sie **[SERVICE_DECOMPOSITION_ANALYSIS.md](./SERVICE_DECOMPOSITION_ANALYSIS.md)** vollständig
+   - Bounded Contexts
+   - Technische Patterns (ACL, Saga, Event Sourcing)
+   - Technologie-Stack
 
-```
-┌─────────────────────────────────────────────────────────┐
-│ OFBiz Codebase Metriken                                 │
-├─────────────────────────────────────────────────────────┤
-│ Java-Elemente:              343.608                     │
-│ Typen/Klassen:              11.752                      │
-│ Dateien:                    4.160                       │
-│ Packages:                   877                         │
-│                                                         │
-│ Services identifiziert:     30+                         │
-│ Zirkuläre Abhängigkeiten:   1 (KRITISCH)               │
-│ Services mit >50 deps:      5                           │
-│ Durchschn. Abhängigkeiten:  ~60 pro Service            │
-│                                                         │
-│ Status: 🔴 REFAKTORIERUNG ERFORDERLICH                 │
-└─────────────────────────────────────────────────────────┘
-```
+2. Analysieren Sie **[DEPENDENCY_GRAPH_VISUALIZATION.md](./DEPENDENCY_GRAPH_VISUALIZATION.md)**
+   - Dependency Graphs
+   - Event-Driven Architecture
+   - Deployment Architecture
 
-### Ziele nach Phase 1 (4 Monate)
-
-```
-┌─────────────────────────────────────────────────────────┐
-│ Zielmetriken nach Refaktorierung Phase 1                │
-├─────────────────────────────────────────────────────────┤
-│ Zirkuläre Abhängigkeiten:   0 (von 1)                  │
-│ Services mit >50 deps:      1 (von 5)                  │
-│ Durchschn. Abhängigkeiten:  ~20 pro Service            │
-│ Test-Abdeckung:             >80%                        │
-│ Deployment-Unabhängigkeit:  60%                         │
-│                                                         │
-│ Status: 🟢 REFAKTORIERUNG ERFOLGREICH                  │
-└─────────────────────────────────────────────────────────┘
-```
-
----
-
-## 🚀 Schnellstart-Anleitung
-
-### Für Architekten & Tech-Leads
-
-1. **Lesen Sie:** [`OFBIZ_ANALYSIS.md`](OFBIZ_ANALYSIS.md) (20 min)
-2. **Verstehen Sie:** Die kritischen Services und Abhängigkeiten
-3. **Planen Sie:** Refaktorierungs-Roadmap basierend auf Phasen
-4. **Kommunizieren Sie:** Erkenntnisse mit dem Team
+3. Planen Sie mit **[PARTY_SERVICE_EXTRACTION_GUIDE.md](./PARTY_SERVICE_EXTRACTION_GUIDE.md)**
+   - Proof of Concept
+   - Technische Architektur
+   - API Design
 
 ### Für Entwickler
 
-1. **Lesen Sie:** [`REFACTORING_STARTER_KIT.md`](REFACTORING_STARTER_KIT.md) (20 min)
-2. **Verstehen Sie:** Die Code-Templates und Best Practices
-3. **Implementieren Sie:** Erste Service-Refaktorierung
-4. **Testen Sie:** Unit- und Integration-Tests
-5. **Nutzen Sie:** [`NEO4J_QUERIES.md`](NEO4J_QUERIES.md) für Analysen
+1. Beginnen Sie mit **[PARTY_SERVICE_EXTRACTION_GUIDE.md](./PARTY_SERVICE_EXTRACTION_GUIDE.md)**
+   - Projektstruktur
+   - Domain Model
+   - API Endpoints
+   - Code-Beispiele
 
-### Für Datenanalysten
+2. Nutzen Sie **[NEO4J_QUERIES.md](./NEO4J_QUERIES.md)**
+   - Analysieren Sie spezifische Module
+   - Finden Sie Abhängigkeiten
+   - Identifizieren Sie Schnittstellen
 
-1. **Nutzen Sie:** [`NEO4J_QUERIES.md`](NEO4J_QUERIES.md)
-2. **Führen Sie aus:** Queries zur Abhängigkeitsanalyse
-3. **Erstellen Sie:** Berichte und Visualisierungen
-4. **Tracken Sie:** Refaktorierungs-Fortschritt
+3. Implementieren Sie Tests aus **PARTY_SERVICE_EXTRACTION_GUIDE.md** Abschnitt 5
 
----
+## 📊 Wichtigste Erkenntnisse
 
-## 📋 Empfohlene Lesereihenfolge
+### Module Overview
 
-### Tag 1: Überblick
-- [ ] OFBIZ_ANALYSIS.md (Abschnitte 1-3)
-- [ ] Diskussion mit Team
+| Kategorie | Module | Typen | Status |
+|-----------|--------|-------|--------|
+| **Framework** | base, entity, service, widget | 4.520 | Shared Infrastructure |
+| **Business Core** | product, content, order, accounting | 1.064 | High Priority |
+| **Business Support** | party, shipment, workeffort | 252 | Medium Priority |
+| **Business Specialized** | manufacturing, marketing, humanres, sfa | 72 | Low Priority |
 
-### Tag 2: Detaillierte Planung
-- [ ] OFBIZ_ANALYSIS.md (Abschnitte 4-6)
-- [ ] OFBIZ_REFACTORING_GUIDE.md (Abschnitte 1-3)
+### Empfohlene Extraktionsreihenfolge
 
-### Tag 3: Implementierungsvorbereitung
-- [ ] REFACTORING_STARTER_KIT.md (Abschnitte 1-3)
-- [ ] NEO4J_QUERIES.md (Abschnitte 1-3)
+1. **Tier 1 (Sofort):** Party → Content → Marketing
+   - Geringe Komplexität
+   - Wenige Abhängigkeiten
+   - Fundament für andere Services
 
-### Tag 4: Detaillierte Implementierung
-- [ ] OFBIZ_REFACTORING_GUIDE.md (Abschnitte 4-7)
-- [ ] REFACTORING_STARTER_KIT.md (Abschnitte 4-6)
+2. **Tier 2 (Nach 3-6 Monaten):** Product → WorkEffort → Shipment
+   - Mittlere Komplexität
+   - Nutzen Tier-1-Services
+   - Wichtig für Business
 
-### Laufend: Referenz
-- [ ] NEO4J_QUERIES.md (zum Nachschlagen)
-- [ ] REFACTORING_STARTER_KIT.md (Checklisten)
+3. **Tier 3 (Nach 9-12 Monaten):** Order → Accounting → Manufacturing
+   - Hohe Komplexität
+   - Orchestrierung mehrerer Services
+   - Kritisch für Business
 
----
+### Kritische Erfolgsfaktoren
 
-## 🔍 Wie man die Dokumentation nutzt
+✅ **Schrittweises Vorgehen** - Strangler Fig Pattern, keine Big-Bang-Migration
 
-### Szenario 1: "Ich muss verstehen, warum OFBiz refaktoriert werden muss"
-→ Lesen Sie: **OFBIZ_ANALYSIS.md**, Abschnitte 1-3
+✅ **Starkes Team** - Microservices-Erfahrung, DDD-Kenntnisse
 
-### Szenario 2: "Ich muss OrderServices refaktorieren"
-→ Lesen Sie: **OFBIZ_REFACTORING_GUIDE.md**, Abschnitt 2
-→ Nutzen Sie: **REFACTORING_STARTER_KIT.md**, Abschnitte 2-4
+✅ **Gute Infrastruktur** - API Gateway, Event Bus, Monitoring
 
-### Szenario 3: "Ich muss die Abhängigkeiten von PaymentGatewayServices verstehen"
-→ Nutzen Sie: **NEO4J_QUERIES.md**, Abschnitt 7.1
-→ Lesen Sie: **OFBIZ_REFACTORING_GUIDE.md**, Abschnitt 3
+✅ **Zeit & Geduld** - 18-24 Monate für vollständige Migration
 
-### Szenario 4: "Ich muss den Refaktorierungs-Fortschritt tracken"
-→ Nutzen Sie: **NEO4J_QUERIES.md**, Abschnitt 8
-→ Lesen Sie: **OFBIZ_REFACTORING_GUIDE.md**, Abschnitt 6
+✅ **Dual-Write-Phase** - Parallelbetrieb zur Validierung
 
-### Szenario 5: "Ich muss eine neue Service-Klasse erstellen"
-→ Nutzen Sie: **REFACTORING_STARTER_KIT.md**, Abschnitte 2-3
-→ Folgen Sie: Migrations-Checkliste in Abschnitt 4
+✅ **Monitoring** - Observability von Anfang an
 
----
+## 🛠️ Technologie-Stack
 
-## 🛠️ Tools & Technologien
+### Service-Implementierung
+- **Framework:** Spring Boot 3.x (Java 17+)
+- **API:** REST (Spring MVC) + GraphQL
+- **Datenbank:** PostgreSQL, MongoDB, Redis
 
-### Erforderlich
-- **Neo4j** - Graphdatenbank für Code-Analyse
-- **jqAssistant** - Code-Scanner für Neo4j
-- **Java 11+** - Programmiersprache
-- **Maven/Gradle** - Build-Tools
+### Infrastruktur
+- **Container:** Docker, Kubernetes
+- **Service Mesh:** Istio oder Linkerd
+- **API Gateway:** Kong oder Spring Cloud Gateway
+- **Messaging:** Apache Kafka, RabbitMQ
 
-### Empfohlen
-- **Spring Framework 6.0+** - Dependency Injection
-- **JUnit 5** - Unit Testing
-- **Mockito** - Mocking Framework
-- **Docker** - Containerisierung
-- **Kubernetes** - Orchestrierung
+### Observability
+- **Metriken:** Prometheus + Grafana
+- **Logs:** ELK Stack
+- **Tracing:** Jaeger oder Zipkin
 
-### Optional
-- **Kafka** - Event Streaming
-- **Prometheus** - Monitoring
-- **ELK Stack** - Logging
-- **Grafana** - Visualisierung
+## 📈 Timeline
 
----
+```
+Monat 1-2:   Phase 0 (Infrastruktur) + Party Service PoC
+Monat 3-4:   Party Service Produktion + Content Service
+Monat 5-6:   Marketing Service + Product Service Start
+Monat 7-10:  Product Service + WorkEffort + Shipment
+Monat 11-14: Order Service (komplex, Saga-Pattern)
+Monat 15-18: Accounting Service + Manufacturing
+Monat 19-24: Weitere Services + Legacy-Abbau
+```
 
-## 📞 Support & Kontakt
+## 🔍 Neo4j-Analyse
 
-### Bei Fragen zur Analyse
-1. Konsultieren Sie die relevante Dokumentation
-2. Führen Sie die entsprechende Neo4j-Query aus
-3. Dokumentieren Sie Ihre Erkenntnisse
-4. Aktualisieren Sie die Dokumentation
+Die Dokumentation basiert auf einer umfassenden Code-Analyse in Neo4j:
 
-### Bei Fragen zur Implementierung
-1. Konsultieren Sie REFACTORING_STARTER_KIT.md
-2. Überprüfen Sie die Code-Templates
-3. Führen Sie die Migrations-Checkliste durch
-4. Fragen Sie das Team
+- **343.608** Java-Elemente
+- **11.752** Typen
+- **877** Packages
+- **4.160** Dateien
 
-### Bei Fragen zu Neo4j-Queries
-1. Konsultieren Sie NEO4J_QUERIES.md
-2. Passen Sie die Queries an Ihre Bedürfnisse an
-3. Dokumentieren Sie neue Queries
-4. Teilen Sie mit dem Team
+### Wichtige Queries
 
----
+```cypher
+// Module mit ihren Abhängigkeiten
+MATCH (source:Package)-[:CONTAINS*]->(st:Type)-[:DEPENDS_ON]->(tt:Type)<-[:CONTAINS*]-(target:Package)
+WHERE source.fqn STARTS WITH 'org.apache.ofbiz.order'
+  AND target.fqn STARTS WITH 'org.apache.ofbiz.product'
+RETURN st.name, tt.name
 
-## 📊 Dokumentations-Statistiken
+// Zentrale Hub-Klassen finden
+MATCH (t:Type)<-[:DEPENDS_ON]-(dependent:Type)
+WHERE t.fqn STARTS WITH 'org.apache.ofbiz'
+WITH t, COUNT(dependent) as incomingDeps
+WHERE incomingDeps > 10
+RETURN t.name, t.fqn, incomingDeps
+ORDER BY incomingDeps DESC
+```
 
-| Dokument | Seiten | Wörter | Queries | Code-Beispiele |
-|----------|--------|--------|---------|----------------|
-| OFBIZ_ANALYSIS.md | ~15 | ~4.500 | - | 5 |
-| OFBIZ_REFACTORING_GUIDE.md | ~20 | ~6.000 | - | 15 |
-| NEO4J_QUERIES.md | ~25 | ~5.000 | 50+ | 50+ |
-| REFACTORING_STARTER_KIT.md | ~20 | ~5.500 | - | 20 |
-| **GESAMT** | **~80** | **~21.000** | **50+** | **90+** |
+Weitere Queries in **[NEO4J_QUERIES.md](./NEO4J_QUERIES.md)**
 
----
+## 🎓 Weiterführende Ressourcen
 
-## 🎓 Lernpfad
+### Patterns & Practices
+- [Strangler Fig Pattern](https://martinfowler.com/bliki/StranglerFigApplication.html)
+- [Domain-Driven Design](https://martinfowler.com/bliki/DomainDrivenDesign.html)
+- [Microservices Patterns](https://microservices.io/patterns/)
+- [Saga Pattern](https://microservices.io/patterns/data/saga.html)
+- [Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html)
 
-### Anfänger (Woche 1)
-- [ ] OFBIZ_ANALYSIS.md lesen
-- [ ] Grundkonzepte verstehen
-- [ ] Mit Team diskutieren
+### Technologien
+- [Spring Boot](https://spring.io/projects/spring-boot)
+- [Spring Cloud](https://spring.io/projects/spring-cloud)
+- [Apache Kafka](https://kafka.apache.org/)
+- [Kubernetes](https://kubernetes.io/)
+- [Istio Service Mesh](https://istio.io/)
 
-### Fortgeschrittene (Woche 2-3)
-- [ ] OFBIZ_REFACTORING_GUIDE.md lesen
-- [ ] Erste Service refaktorieren
-- [ ] Tests schreiben
+## 📞 Support & Fragen
 
-### Experte (Woche 4+)
-- [ ] Mehrere Services refaktorieren
-- [ ] Event-Driven Architecture implementieren
-- [ ] Monitoring & Metriken einführen
+Für Fragen zur Analyse oder Implementierung:
 
----
-
-## ✅ Checkliste für den Start
-
-### Vorbereitung
-- [ ] Alle 4 Dokumente gelesen
-- [ ] Neo4j-Instanz verfügbar
-- [ ] Team informiert
-- [ ] Zeitplan erstellt
-
-### Planung
-- [ ] Refaktorierungs-Phasen definiert
-- [ ] Prioritäten gesetzt
-- [ ] Ressourcen zugewiesen
-- [ ] Risiken identifiziert
-
-### Implementierung
-- [ ] Feature-Branch erstellt
-- [ ] Dependencies hinzugefügt
-- [ ] Erste Service refaktoriert
-- [ ] Tests geschrieben
-
-### Validierung
-- [ ] Code-Review durchgeführt
-- [ ] Tests grün
-- [ ] Performance OK
-- [ ] Dokumentation aktualisiert
-
----
+1. Prüfen Sie die relevante Dokumentation
+2. Nutzen Sie die Neo4j-Queries für spezifische Analysen
+3. Konsultieren Sie die Code-Beispiele im Party Service Guide
 
 ## 🔄 Nächste Schritte
 
-### Diese Woche
-1. [ ] Team-Meeting: Analyse präsentieren
-2. [ ] Dokumentation verteilen
-3. [ ] Fragen sammeln und beantworten
+### Sofort (Woche 1-2)
+- [ ] Diese Dokumentation mit Stakeholdern reviewen
+- [ ] Pilotprojekt definieren (Empfehlung: Party Service)
+- [ ] Team zusammenstellen (2-3 Entwickler)
+- [ ] Infrastruktur-Setup planen
 
-### Nächste Woche
-1. [ ] Refaktorierungs-Roadmap finalisieren
-2. [ ] Erste Service auswählen
-3. [ ] Development-Umgebung vorbereiten
+### Kurzfristig (Monat 1-2)
+- [ ] Infrastruktur aufsetzen (API Gateway, Kafka, Monitoring)
+- [ ] Party Service als Proof of Concept implementieren
+- [ ] Dual-Write-Phase starten
+- [ ] Erste Metriken sammeln
 
-### Folgende Woche
-1. [ ] Erste Service refaktorieren
-2. [ ] Tests schreiben
-3. [ ] Code-Review durchführen
+### Mittelfristig (Monat 3-6)
+- [ ] Party Service in Produktion
+- [ ] Content Service extrahieren
+- [ ] Product Service starten
+- [ ] Event-Bus produktiv nehmen
 
----
-
-## 📚 Zusätzliche Ressourcen
-
-### Externe Dokumentation
-- [OFBiz Developer Guide](https://ofbiz.apache.org/developers.html)
-- [Spring Framework Documentation](https://spring.io/projects/spring-framework)
-- [Neo4j Documentation](https://neo4j.com/docs/)
-- [jqAssistant Documentation](https://jqassistant.org/)
-
-### Best Practices
-- [Microservices Patterns](https://microservices.io/patterns/index.html)
-- [Clean Code](https://www.oreilly.com/library/view/clean-code-a/9780136083238/)
-- [Refactoring](https://refactoring.com/)
-- [Domain-Driven Design](https://www.domainlanguage.com/ddd/)
-
-### Tools & Tutorials
-- [Spring Boot Tutorial](https://spring.io/guides/gs/spring-boot/)
-- [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/)
-- [Docker Tutorial](https://docs.docker.com/get-started/)
-- [Kubernetes Tutorial](https://kubernetes.io/docs/tutorials/)
+### Langfristig (Monat 7-18)
+- [ ] Order Service extrahieren (komplex)
+- [ ] Accounting Service extrahieren
+- [ ] Weitere Services nach Bedarf
+- [ ] Legacy OFBiz schrittweise abbauen
 
 ---
 
-## 📝 Versionsverlauf
+**Letzte Aktualisierung:** 2026-01-10
 
-| Version | Datum | Änderungen |
-|---------|-------|-----------|
-| 1.0 | 2026-01-09 | Initiale Analyse und Dokumentation |
-| - | - | - |
+**Basierend auf:** Neo4j-Analyse der OFBiz-Codebasis (343.608 Java-Elemente)
 
----
-
-## 📄 Lizenz & Nutzung
-
-Diese Dokumentation ist Teil des OFBiz-Refaktorierungs-Projekts und darf frei innerhalb des Projekts verwendet werden.
-
----
-
-## 🙏 Danksagungen
-
-Diese Analyse wurde mit Hilfe von:
-- **Neo4j** - Graphdatenbank
-- **jqAssistant** - Code-Analyse
-- **Claude AI** - Dokumentation und Analyse
-
-erstellt.
-
----
-
-**Letzte Aktualisierung:** 2026-01-09
-**Status:** ✅ Bereit für Verwendung
-**Nächste Überprüfung:** Nach Phase 1 (ca. 4 Monate)
+**Status:** ✅ Analyse abgeschlossen, bereit für Implementierung
