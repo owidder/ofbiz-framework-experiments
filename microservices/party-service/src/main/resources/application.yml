@@ -1,0 +1,183 @@
+# Party Service - Main Configuration
+# =============================================================================
+
+spring:
+  application:
+    name: party-service
+  
+  # Profile Configuration
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  
+  # Database Configuration (PostgreSQL)
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/partydb}
+    username: ${DATABASE_USERNAME:partyuser}
+    password: ${DATABASE_PASSWORD:partypass}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: PartyServiceHikariPool
+  
+  # JPA Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate  # Flyway manages schema
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+    show-sql: false
+    open-in-view: false
+  
+  # Flyway Configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    schemas: public
+    table: flyway_schema_history
+    validate-on-migrate: true
+  
+  # Cache Configuration (Redis)
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000  # 1 hour in milliseconds
+      cache-null-values: false
+  
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+          max-wait: -1ms
+  
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: party-service-group
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: org.apache.ofbiz.party.*
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8081}
+  servlet:
+    context-path: /api/party
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: false
+
+# Management & Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    org.apache.ofbiz.party: DEBUG
+    org.springframework.web: INFO
+    org.springframework.data: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/party-service.log
+    max-size: 10MB
+    max-history: 30
+
+# OpenAPI / Swagger Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+  show-actuator: true
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+
+# Application-Specific Configuration
+party-service:
+  # Feature Flags
+  features:
+    dual-write-enabled: ${DUAL_WRITE_ENABLED:false}
+    ofbiz-integration-enabled: ${OFBIZ_INTEGRATION_ENABLED:false}
+    event-publishing-enabled: ${EVENT_PUBLISHING_ENABLED:true}
+  
+  # OFBiz Integration
+  ofbiz:
+    base-url: ${OFBIZ_BASE_URL:http://localhost:8080}
+    timeout: 5000
+    retry-attempts: 3
+  
+  # Kafka Topics
+  kafka:
+    topics:
+      party-created: party.events.created
+      party-updated: party.events.updated
+      party-deleted: party.events.deleted
+      party-role-assigned: party.events.role-assigned
+      contact-info-updated: party.events.contact-updated
+  
+  # Cache Configuration
+  cache:
+    party-ttl: 3600  # 1 hour
+    role-ttl: 7200   # 2 hours
+    contact-ttl: 1800  # 30 minutes
