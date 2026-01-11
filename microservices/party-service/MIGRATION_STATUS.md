@@ -1,6 +1,6 @@
 # Party Service PoC - Migration Status
 
-**Letzte Aktualisierung:** 2026-01-11 16:03 CET
+**Letzte Aktualisierung:** 2026-01-11 16:14 CET
 **Status:** 🟡 In Entwicklung - Phase 1
 
 ---
@@ -12,12 +12,12 @@ Dieser Dokument trackt den Fortschritt der Migration des Party Service aus dem O
 ## Gesamtfortschritt
 
 ```
-Phase 1: Setup                    [██████░░░░] 60% (3/5 Schritte)
+Phase 1: Setup                    [████████░░] 80% (4/5 Schritte)
 Phase 2: Domain Model             [░░░░░░░░░░]  0% (0/4 Schritte)
 Phase 3: REST API                 [░░░░░░░░░░]  0% (0/4 Schritte)
 Phase 4: Integration              [░░░░░░░░░░]  0% (0/4 Schritte)
 
-GESAMT:                           [███░░░░░░░] 18% (3/17 Schritte)
+GESAMT:                           [████░░░░░░] 24% (4/17 Schritte)
 ```
 
 ---
@@ -85,25 +85,34 @@ include 'microservices:party-service'
 
 ---
 
-### 🔄 Schritt 4: build.gradle erstellen
-**Status:** 🔄 Ausstehend  
-**Abhängig von:** Schritt 3
+### ✅ Schritt 4: build.gradle erstellen
+**Status:** ✅ Abgeschlossen
+**Datum:** 2026-01-11
 
-**Aufgaben:**
-- [ ] `microservices/party-service/build.gradle` erstellen
-- [ ] Spring Boot Plugin konfigurieren (3.2.1)
-- [ ] Dependencies hinzufügen:
-  - [ ] Spring Boot Starter Web
-  - [ ] Spring Boot Starter Data JPA
-  - [ ] PostgreSQL Driver
-  - [ ] Redis
-  - [ ] Kafka (optional)
-  - [ ] OpenAPI/Swagger
-  - [ ] MapStruct
-  - [ ] Lombok
-  - [ ] Testcontainers
-- [ ] Main-Class definieren: `PartyServiceApplication`
-- [ ] Build testen: `./gradlew :microservices:party-service:build`
+**Ergebnis:**
+- `microservices/party-service/build.gradle` erstellt
+- Spring Boot Plugin 3.2.1 konfiguriert
+- Alle Dependencies hinzugefügt:
+  - ✅ Spring Boot Starter Web, Data JPA, Validation, Actuator, Cache
+  - ✅ PostgreSQL Driver + H2 für Tests
+  - ✅ Flyway 10.4.1 für Migrations
+  - ✅ Redis für Caching
+  - ✅ Kafka für Events
+  - ✅ OpenAPI/Swagger 2.3.0
+  - ✅ MapStruct 1.5.5 für DTO-Mapping
+  - ✅ Lombok für Boilerplate-Reduktion
+  - ✅ Testcontainers 1.19.3 für Integration Tests
+  - ✅ REST Assured 5.4.0 für API-Tests
+- Main-Class definiert: `PartyServiceApplication`
+- Build erfolgreich getestet: ✅ `BUILD SUCCESSFUL`
+- JAR erstellt: `party-service-1.0.0-SNAPSHOT.jar` (80MB)
+
+**Custom Tasks:**
+- `integrationTest` - Für Integration Tests
+- `e2eTest` - Für End-to-End Tests
+- `allTests` - Alle Tests zusammen
+
+**Datei:** `/Users/oliverwidder/dev/ofbiz/microservices/party-service/build.gradle`
 
 ---
 
