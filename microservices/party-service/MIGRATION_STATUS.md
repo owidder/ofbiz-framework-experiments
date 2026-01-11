@@ -1,6 +1,6 @@
 # Party Service PoC - Migration Status
 
-**Letzte Aktualisierung:** 2026-01-11 15:54 CET  
+**Letzte Aktualisierung:** 2026-01-11 16:03 CET
 **Status:** 🟡 In Entwicklung - Phase 1
 
 ---
@@ -12,12 +12,12 @@ Dieser Dokument trackt den Fortschritt der Migration des Party Service aus dem O
 ## Gesamtfortschritt
 
 ```
-Phase 1: Setup                    [████░░░░░░] 40% (2/5 Schritte)
+Phase 1: Setup                    [██████░░░░] 60% (3/5 Schritte)
 Phase 2: Domain Model             [░░░░░░░░░░]  0% (0/4 Schritte)
 Phase 3: REST API                 [░░░░░░░░░░]  0% (0/4 Schritte)
 Phase 4: Integration              [░░░░░░░░░░]  0% (0/4 Schritte)
 
-GESAMT:                           [██░░░░░░░░] 12% (2/17 Schritte)
+GESAMT:                           [███░░░░░░░] 18% (3/17 Schritte)
 ```
 
 ---
@@ -65,15 +65,21 @@ microservices/party-service/
 
 ---
 
-### 🔄 Schritt 3: settings.gradle anpassen
-**Status:** 🔄 Ausstehend  
-**Geplant:** Nächster Schritt
+### ✅ Schritt 3: settings.gradle anpassen
+**Status:** ✅ Abgeschlossen
+**Datum:** 2026-01-11
 
-**Aufgaben:**
-- [ ] `settings.gradle` im Root öffnen
-- [ ] Zeile hinzufügen: `include 'microservices:party-service'`
-- [ ] Gradle Sync durchführen
-- [ ] Verifizieren: `./gradlew projects` zeigt party-service
+**Ergebnis:**
+- `settings.gradle` angepasst
+- Zeile hinzugefügt: `include 'microservices:party-service'`
+- Gradle erkennt Party Service als Projekt
+- Verifiziert: `./gradlew projects` zeigt `:microservices:party-service`
+
+**Änderungen:**
+```groovy
+// Microservices (separate from OFBiz components)
+include 'microservices:party-service'
+```
 
 **Datei:** `/Users/oliverwidder/dev/ofbiz/settings.gradle`
 
