@@ -108,7 +108,7 @@ Diese Übersicht analysiert die Code-Qualität der OFBiz-Anwendung mit Fokus auf
 
 ### 3.1 Single Responsibility Principle (SRP) - Beispiel
 
-**Klasse**: [`ShoppingCart`](framework/order/src/main/java/org/apache/ofbiz/order/shoppingcart/ShoppingCart.java)
+**Klasse**: [`ShoppingCart`](../applications/order/src/main/java/org/apache/ofbiz/order/shoppingcart/ShoppingCart.java:85)
 
 **Problem**:
 - **393 Methoden** (in verschiedenen Versionen)
@@ -147,7 +147,7 @@ addPaymentRef(...)
 
 ### 3.2 Single Responsibility Principle (SRP) - Weiteres Beispiel
 
-**Klasse**: [`ModelForm`](framework/widget/src/main/java/org/apache/ofbiz/widget/model/ModelForm.java)
+**Klasse**: [`ModelForm`](../framework/widget/src/main/java/org/apache/ofbiz/widget/model/ModelForm.java:72)
 
 **Problem**:
 - **86 Felder**
@@ -184,7 +184,7 @@ defaultWidgetAreaStyle
 
 ### 3.3 Open/Closed Principle (OCP) - Beispiel
 
-**Klasse**: [`RequestHandler`](framework/webapp/src/main/java/org/apache/ofbiz/webapp/control/RequestHandler.java)
+**Klasse**: [`RequestHandler`](../framework/webapp/src/main/java/org/apache/ofbiz/webapp/control/RequestHandler.java:83)
 
 **Methode**: `doRequest(HttpServletRequest, HttpServletResponse, String, GenericValue, Delegator)`
 
@@ -203,7 +203,7 @@ defaultWidgetAreaStyle
 
 ### 3.4 Open/Closed Principle (OCP) - Weiteres Beispiel
 
-**Klasse**: [`OrderServices`](applications/order/src/main/java/org/apache/ofbiz/order/order/OrderServices.java)
+**Klasse**: [`OrderServices`](../applications/order/src/main/java/org/apache/ofbiz/order/order/OrderServices.java:92)
 
 **Problem**:
 - **20 Methoden mit Komplexität > 20**
@@ -224,7 +224,7 @@ defaultWidgetAreaStyle
 
 ### 3.5 Liskov Substitution Principle (LSP) - Beispiel
 
-**Basis-Klasse**: [`AbstractConverter`](framework/base/src/main/java/org/apache/ofbiz/base/conversion/AbstractConverter.java)
+**Basis-Klasse**: [`AbstractConverter`](../framework/base/src/main/java/org/apache/ofbiz/base/conversion/AbstractConverter.java:25)
 
 **Problem**:
 - **98 Subklassen**
@@ -260,7 +260,7 @@ defaultWidgetAreaStyle
 
 ### 3.7 Dependency Inversion Principle (DIP) - Beispiel
 
-**Klasse**: [`GenericDelegator`](framework/entity/src/main/java/org/apache/ofbiz/entity/GenericDelegator.java)
+**Klasse**: [`GenericDelegator`](../framework/entity/src/main/java/org/apache/ofbiz/entity/GenericDelegator.java:95)
 
 **Problem**:
 - **104 Abhängigkeiten** zu anderen OFBiz-Klassen
