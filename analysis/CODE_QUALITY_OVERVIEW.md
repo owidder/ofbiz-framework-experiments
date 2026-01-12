@@ -108,7 +108,7 @@ Diese Übersicht analysiert die Code-Qualität der OFBiz-Anwendung mit Fokus auf
 
 ### 3.1 Single Responsibility Principle (SRP) - Beispiel
 
-**Klasse**: [`ShoppingCart`](../applications/order/src/main/java/org/apache/ofbiz/order/shoppingcart/ShoppingCart.java:85)
+**Klasse**: [`ShoppingCart`](../applications/order/src/main/java/org/apache/ofbiz/order/shoppingcart/ShoppingCart.java#L85)
 
 **Problem**:
 - **393 Methoden** (in verschiedenen Versionen)
@@ -147,7 +147,7 @@ addPaymentRef(...)
 
 ### 3.2 Single Responsibility Principle (SRP) - Weiteres Beispiel
 
-**Klasse**: [`ModelForm`](../framework/widget/src/main/java/org/apache/ofbiz/widget/model/ModelForm.java:72)
+**Klasse**: [`ModelForm`](../framework/widget/src/main/java/org/apache/ofbiz/widget/model/ModelForm.java#L72)
 
 **Problem**:
 - **86 Felder**
