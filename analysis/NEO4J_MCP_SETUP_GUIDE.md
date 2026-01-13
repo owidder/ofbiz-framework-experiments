@@ -584,7 +584,7 @@ Sie können mehrere Neo4j-Server konfigurieren:
 - [Model Context Protocol Dokumentation](https://modelcontextprotocol.io/)
 - [Neo4j Driver Dokumentation](https://neo4j.com/docs/javascript-manual/current/)
 - [Cypher Query Language](https://neo4j.com/docs/cypher-manual/current/)
-- [OFBiz Neo4j Queries](./NEO4J_QUERIES.md)
+- [OFBiz Neo4j Queries](../refactor/NEO4J_QUERIES.md)
 
 ## Status
 
