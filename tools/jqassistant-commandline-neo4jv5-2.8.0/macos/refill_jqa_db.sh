@@ -1,10 +1,24 @@
 #!/bin/bash
 # Refill jqAssistant Neo4j Database with Class Files
-# Usage: ./refill_jqa_db.sh
+# Usage: ./refill_jqa_db.sh <project_dir> <neo4j_password>
 
 set -e
 
-PROJECT_DIR="/Users/oliverwidder/dev/ofbiz"
+# Check command line arguments
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <project_dir> <neo4j_password>"
+    echo ""
+    echo "Arguments:"
+    echo "  project_dir      - Path to the OFBiz project directory"
+    echo "  neo4j_password   - Password for Neo4j database"
+    echo ""
+    echo "Example:"
+    echo "  $0 /Users/oliverwidder/dev/ofbiz neo4j12345"
+    exit 1
+fi
+
+PROJECT_DIR="$1"
+NEO4J_PASSWORD="$2"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 JQA_BIN="$PROJECT_DIR/tools/jqassistant-commandline-neo4jv5-2.8.0/bin/jqassistant"
 CLASS_DIR="$PROJECT_DIR/build/classes/java/main"
@@ -15,6 +29,14 @@ echo "=========================================="
 echo "Refilling jqAssistant Neo4j Database"
 echo "=========================================="
 echo ""
+echo "Project Directory: $PROJECT_DIR"
+echo ""
+
+# Check if project directory exists
+if [ ! -d "$PROJECT_DIR" ]; then
+    echo "✗ Project directory not found: $PROJECT_DIR"
+    exit 1
+fi
 
 # Check if class directory exists
 if [ ! -d "$CLASS_DIR" ]; then
@@ -51,7 +73,7 @@ cd "$PROJECT_DIR"
 export JQASSISTANT_STORE_PROVIDER=neo4jv5
 export JQASSISTANT_STORE_URI=bolt://localhost:7687
 export JQASSISTANT_STORE_USERNAME=neo4j
-export JQASSISTANT_STORE_PASSWORD=neo4j12345
+export JQASSISTANT_STORE_PASSWORD="$NEO4J_PASSWORD"
 
 # Run scan with output to log file using remote Neo4j server
 "$JQA_BIN" scan \
@@ -75,11 +97,13 @@ if [ $SCAN_EXIT_CODE -eq 0 ]; then
     echo "Verifying database content..."
     echo ""
     
-    python3 << 'PYTHON_EOF'
+    NEO4J_PASSWORD="$NEO4J_PASSWORD" python3 << 'PYTHON_EOF'
+import os
 from neo4j import GraphDatabase
 
 try:
-    driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "neo4j12345"))
+    neo4j_password = os.environ.get('NEO4J_PASSWORD')
+    driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", neo4j_password))
     
     with driver.session(database="neo4j") as session:
         result = session.run("MATCH (n) RETURN COUNT(n) as count")
