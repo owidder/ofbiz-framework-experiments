@@ -65,5 +65,7 @@ if ps -p "$SERVER_PID" > /dev/null 2>&1; then
 else
     echo "✓ Server stopped successfully"
     rm -f "$PID_FILE" "$INPUT_FIFO"
+    # Clean up any temporary config files
+    rm -f /tmp/jqassistant-config-*.yml
     echo ""
 fi

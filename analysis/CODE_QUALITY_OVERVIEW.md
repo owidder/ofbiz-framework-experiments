@@ -12,16 +12,18 @@ Diese Übersicht analysiert die Code-Qualität der OFBiz-Anwendung mit Fokus auf
 
 | Metrik | Anzahl |
 |--------|--------|
-| **Klassen (Types)** | 11.752 |
-| **Methoden** | 93.541 |
-| **Code-Zeilen (effektiv)** | 647.812 |
-| **Packages** | 877 |
-| **Dateien** | 4.160 |
+| **Klassen (nur OFBiz-Code)** | 2.818 |
+| **Methoden** | 33.267 |
+| **Code-Zeilen (effektiv)** | 194.243 |
+| **Source-Dateien (Java + Groovy)** | 1.615 |
 
 ### Durchschnittswerte
 
-- **Durchschnittliche Methoden pro Klasse**: ~8 Methoden
-- **Durchschnittliche Code-Zeilen pro Methode**: ~7 Zeilen
+- **Durchschnittliche Methoden pro Klasse**: ~11,8 Methoden
+- **Durchschnittliche Code-Zeilen pro Methode**: ~5,8 Zeilen
+- **Klassen pro Datei**: ~1,7 (durch innere Klassen)
+
+**Hinweis:** Diese Analyse enthält nur den OFBiz-eigenen Code ohne externe Bibliotheken. Die vorherige Analyse mit 11.752 Klassen enthielt alle Dependencies.
 
 ---
 
@@ -31,11 +33,11 @@ Diese Übersicht analysiert die Code-Qualität der OFBiz-Anwendung mit Fokus auf
 
 | SOLID-Prinzip | Anzahl Verletzungen | Prozentsatz |
 |---------------|---------------------|-------------|
-| **Single Responsibility Principle (SRP)** | 271 | 3,6% der Klassen |
-| **Open/Closed Principle (OCP)** | 1.648 | 2,4% der Methoden |
+| **Single Responsibility Principle (SRP)** | 56 | 2,0% der Klassen |
+| **Open/Closed Principle (OCP)** | 560 | 1,7% der Methoden |
 | **Liskov Substitution Principle (LSP)** | Gering | < 1% |
 | **Interface Segregation Principle (ISP)** | Moderat | ~1-2% |
-| **Dependency Inversion Principle (DIP)** | 172 | 2,4% der Klassen |
+| **Dependency Inversion Principle (DIP)** | 30 | 1,1% der Klassen |
 
 ### Detaillierte Analyse
 
@@ -44,12 +46,12 @@ Diese Übersicht analysiert die Code-Qualität der OFBiz-Anwendung mit Fokus auf
 **Definition**: Eine Klasse sollte nur eine Verantwortlichkeit haben und nur einen Grund zur Änderung.
 
 **Identifizierte Verletzungen**:
-- **Klassen mit > 50 Methoden**: 217 Klassen
-- **Klassen mit > 100 Methoden**: 54 Klassen
-- **Klassen mit > 20 Feldern**: 137 Klassen
-- **Klassen mit > 50 Feldern**: 16 Klassen
+- **Klassen mit > 50 Methoden**: 56 Klassen (2,0%)
+- **Klassen mit > 100 Methoden**: 14 Klassen (0,5%)
+- **Klassen mit > 20 Feldern**: 36 Klassen (1,3%)
+- **Klassen mit > 50 Feldern**: 4 Klassen (0,1%)
 
-**Schweregrad**: Hoch - 3,6% der Klassen betroffen
+**Schweregrad**: Mittel - 2,0% der Klassen betroffen (deutlich besser als ursprünglich angenommen)
 
 ---
 
@@ -58,11 +60,11 @@ Diese Übersicht analysiert die Code-Qualität der OFBiz-Anwendung mit Fokus auf
 **Definition**: Software-Entitäten sollten offen für Erweiterungen, aber geschlossen für Modifikationen sein.
 
 **Identifizierte Verletzungen**:
-- **Methoden mit zyklomatischer Komplexität > 10**: 4.189 Methoden (6,2%)
-- **Methoden mit zyklomatischer Komplexität > 20**: 1.648 Methoden (2,4%)
-- **Methoden mit zyklomatischer Komplexität > 50**: 272 Methoden (0,4%)
+- **Methoden mit zyklomatischer Komplexität > 10**: 1.383 Methoden (4,2%)
+- **Methoden mit zyklomatischer Komplexität > 20**: 560 Methoden (1,7%)
+- **Methoden mit zyklomatischer Komplexität > 50**: 93 Methoden (0,3%)
 
-**Schweregrad**: Mittel bis Hoch - 2,4% der Methoden stark betroffen
+**Schweregrad**: Mittel - 1,7% der Methoden stark betroffen (besser als ursprünglich angenommen)
 
 ---
 
@@ -97,10 +99,10 @@ Diese Übersicht analysiert die Code-Qualität der OFBiz-Anwendung mit Fokus auf
 **Definition**: High-level Module sollten nicht von Low-level Modulen abhängen. Beide sollten von Abstraktionen abhängen.
 
 **Identifizierte Verletzungen**:
-- **Klassen mit > 30 Abhängigkeiten**: 148 Klassen
-- **Klassen mit > 50 Abhängigkeiten**: 24 Klassen
+- **Klassen mit > 30 Abhängigkeiten**: 30 Klassen (1,1%)
+- **Klassen mit > 50 Abhängigkeiten**: 3 Klassen (0,1%)
 
-**Schweregrad**: Mittel - 2,4% der Klassen mit vielen Abhängigkeiten
+**Schweregrad**: Niedrig - 1,1% der Klassen mit vielen Abhängigkeiten (deutlich besser als ursprünglich angenommen)
 
 ---
 
@@ -398,11 +400,11 @@ org.apache.ofbiz.base.util.UtilXml
 
 | Metrik | Aktuell | Ziel (6 Monate) | Ziel (12 Monate) |
 |--------|---------|-----------------|------------------|
-| Klassen mit > 50 Methoden | 217 | < 150 | < 100 |
-| Klassen mit > 100 Methoden | 54 | < 30 | < 20 |
-| Methoden mit Komplexität > 20 | 1.648 | < 1.200 | < 800 |
-| Methoden mit Komplexität > 50 | 272 | < 150 | < 50 |
-| Klassen mit > 50 Abhängigkeiten | 24 | < 15 | < 10 |
+| Klassen mit > 50 Methoden | 56 | < 40 | < 30 |
+| Klassen mit > 100 Methoden | 14 | < 10 | < 5 |
+| Methoden mit Komplexität > 20 | 560 | < 400 | < 250 |
+| Methoden mit Komplexität > 50 | 93 | < 60 | < 30 |
+| Klassen mit > 50 Abhängigkeiten | 3 | < 2 | < 1 |
 
 ---
 
@@ -421,14 +423,21 @@ Die OFBiz-Codebase zeigt typische Symptome einer gewachsenen Enterprise-Anwendun
 - Starke Kopplung zwischen Komponenten
 
 **Handlungsbedarf**:
-- **Hoch**: 3-4% der Klassen benötigen dringendes Refactoring
-- **Mittel**: 10-15% der Klassen sollten überarbeitet werden
+- **Hoch**: ~0,5% der Klassen benötigen dringendes Refactoring (14 Klassen mit >100 Methoden)
+- **Mittel**: ~2% der Klassen sollten überarbeitet werden (56 Klassen mit >50 Methoden)
 - **Niedrig**: Kontinuierliche Verbesserung für den Rest
 
-Die identifizierten Probleme sind lösbar, erfordern aber einen systematischen und priorisierten Ansatz. Ein schrittweises Refactoring unter Beibehaltung der Funktionalität ist empfohlen.
+**Positive Erkenntnisse**:
+Die aktualisierte Analyse zeigt, dass die Code-Qualität **deutlich besser** ist als ursprünglich angenommen:
+- Nur 2,0% der Klassen haben SRP-Verletzungen (statt 3,6%)
+- Nur 1,7% der Methoden haben hohe Komplexität (statt 2,4%)
+- Nur 1,1% der Klassen haben viele Abhängigkeiten (statt 2,4%)
+
+Die identifizierten Probleme sind lösbar und konzentrieren sich auf wenige kritische Klassen. Ein fokussiertes Refactoring der Top-20-Problemklassen würde bereits eine signifikante Verbesserung bringen.
 
 ---
 
-**Erstellt am**: 2026-01-12  
-**Datenquelle**: Neo4j-Datenbank mit importiertem OFBiz-Code  
-**Analysierte Version**: OFBiz Hauptversion aus `/Users/oliverwidder/dev/ofbiz`
+**Erstellt am**: 2026-01-12 (Aktualisiert: 2026-01-15)
+**Datenquelle**: Neo4j-Datenbank mit importiertem OFBiz-Code (nur OFBiz-eigener Code, ohne externe Bibliotheken)
+**Analysierte Version**: OFBiz aus `/Users/oliverwidder/dev/ofbiz/build/libs/ofbiz.jar`
+**Hinweis**: Die ursprüngliche Analyse enthielt externe Bibliotheken (11.752 Klassen). Diese aktualisierte Version analysiert nur den OFBiz-eigenen Code (2.818 Klassen) und zeigt ein realistischeres Bild der Code-Qualität.

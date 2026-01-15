@@ -1,6 +1,8 @@
 #!/bin/bash
-# Start jqAssistant Neo4j Database Server
-# Usage: ./start_jqa_db.sh <project_dir> [neo4j_password]
+# Import OFBiz classes into Neo4j via jqAssistant
+# Usage: ./import_ofbiz.sh <project_dir> <neo4j_password>
+
+set -e
 
 # Check command line arguments
 if [ $# -lt 1 ] || [ $# -gt 2 ]; then
@@ -24,21 +26,30 @@ PROJECT_DIR="$1"
 NEO4J_PASSWORD="${2:-${NEO4J_PASSWORD:-neo4j}}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 JQA_BIN="$PROJECT_DIR/tools/jqassistant-commandline-neo4jv5-2.8.0/bin/jqassistant"
-LOG_FILE="/tmp/jqassistant-server.log"
-PID_FILE="/tmp/jqassistant-server.pid"
-INPUT_FIFO="/tmp/jqassistant-input"
-CONFIG_FILE="/tmp/jqassistant-config-$$.yml"
+CONFIG_FILE="/tmp/jqassistant-import-config-$$.yml"
+OFBIZ_JAR="$PROJECT_DIR/build/libs/ofbiz.jar"
 
 echo "=========================================="
-echo "Starting jqAssistant Server"
+echo "Import OFBiz into Neo4j via jqAssistant"
 echo "=========================================="
 echo ""
 echo "Project Directory: $PROJECT_DIR"
+echo "OFBiz JAR: $OFBIZ_JAR"
 echo ""
 
 # Check if project directory exists
 if [ ! -d "$PROJECT_DIR" ]; then
     echo "✗ Project directory not found: $PROJECT_DIR"
+    exit 1
+fi
+
+# Check if JAR file exists
+if [ ! -f "$OFBIZ_JAR" ]; then
+    echo "✗ OFBiz JAR not found: $OFBIZ_JAR"
+    echo ""
+    echo "Please build the project first:"
+    echo "  cd $PROJECT_DIR"
+    echo "  ./gradlew build"
     exit 1
 fi
 
@@ -52,68 +63,47 @@ if ! nc -z localhost 7687 2>/dev/null; then
     echo "  brew services start neo4j"
     echo "  neo4j start"
     echo ""
-    echo "Then run this script again."
     exit 1
 fi
 echo "✓ Neo4j is running"
 echo ""
 
-# Kill any existing server
-pkill -f "jqassistant server" 2>/dev/null || true
-sleep 2
-rm -f "$INPUT_FIFO" "$PID_FILE" "$CONFIG_FILE"
-
 # Create temporary config file with password
 cat > "$CONFIG_FILE" << EOF
 jqassistant:
   store:
-    provider: neo4jv5
     uri: bolt://localhost:7687
     username: neo4j
     password: $NEO4J_PASSWORD
-    neo4j:
-      database: neo4j
+    embedded:
+      enabled: false
+    remote:
+      enabled: true
 EOF
 
-# Create named pipe
-mkfifo "$INPUT_FIFO" 2>/dev/null || true
+echo "Step 1: Resetting database..."
+"$JQA_BIN" reset -C "$CONFIG_FILE"
 
-# Start server with nohup, using named pipe for stdin
-echo "Starting server..."
-cd "$SCRIPT_DIR"
-nohup env JQASSISTANT_STORE_NEO4J_DATABASE=neo4j "$JQA_BIN" server \
-    -C "$CONFIG_FILE" \
-    < "$INPUT_FIFO" > "$LOG_FILE" 2>&1 &
-cd "$PROJECT_DIR"
-SERVER_PID=$!
-echo $SERVER_PID > "$PID_FILE"
+echo ""
+echo "Step 2: Scanning JAR file..."
+echo "This may take several minutes..."
+"$JQA_BIN" scan -f "$OFBIZ_JAR" -C "$CONFIG_FILE"
 
-# Keep the named pipe open by writing to it in background
-# This process will be killed when we stop the server
-(while true; do sleep 1; done > "$INPUT_FIFO" 2>/dev/null) &
-FIFO_PID=$!
-echo $FIFO_PID >> "$PID_FILE"
+echo ""
+echo "Step 3: Running analysis..."
+"$JQA_BIN" analyze -C "$CONFIG_FILE"
 
-# Wait for server to initialize
-echo "Waiting for server to initialize..."
-sleep 10
+# Clean up
+rm -f "$CONFIG_FILE"
 
-# Check if server is running
-if ps -p "$SERVER_PID" > /dev/null 2>&1; then
-    echo ""
-    echo "✓ Server started successfully (PID: $SERVER_PID)"
-    echo ""
-    echo "Database available at:"
-    echo "  Bolt: bolt://localhost:7687"
-    echo "  Browser: http://localhost:7474"
-    echo "  Username: neo4j"
-    echo ""
-    echo "To stop the server, run: ./stop_jqa_db.sh"
-else
-    echo "✗ Failed to start server"
-    echo ""
-    echo "Last 30 lines of log:"
-    tail -30 "$LOG_FILE"
-    rm -f "$PID_FILE"
-    exit 1
-fi
+echo ""
+echo "=========================================="
+echo "✓ Import completed successfully!"
+echo "=========================================="
+echo ""
+echo "You can now:"
+echo "  1. Open Neo4j Browser: http://localhost:7474"
+echo "  2. Run queries like:"
+echo "     MATCH (c:Class) RETURN c.fqn LIMIT 10"
+echo "     MATCH (c:Class)-[:DECLARES]->(m:Method) RETURN c.fqn, count(m) ORDER BY count(m) DESC LIMIT 10"
+echo ""
