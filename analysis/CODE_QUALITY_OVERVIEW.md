@@ -4,6 +4,10 @@
 
 Diese Übersicht analysiert die Code-Qualität der OFBiz-Anwendung mit Fokus auf grundlegende Metriken und SOLID-Prinzipien-Verletzungen.
 
+**Analysiert:** Nur OFBiz-eigener Code (ohne externe Bibliotheken)  
+**Quelle:** `build/libs/ofbiz.jar`  
+**Datum:** 15. Januar 2026
+
 ---
 
 ## 1. Grundlegende Code-Metriken
@@ -12,18 +16,28 @@ Diese Übersicht analysiert die Code-Qualität der OFBiz-Anwendung mit Fokus auf
 
 | Metrik | Anzahl |
 |--------|--------|
-| **Klassen (nur OFBiz-Code)** | 2.818 |
+| **Klassen** | 2.818 |
 | **Methoden** | 33.267 |
 | **Code-Zeilen (effektiv)** | 194.243 |
-| **Source-Dateien (Java + Groovy)** | 1.615 |
+| **Source-Dateien (Java)** | 1.145 |
+| **Source-Dateien (Groovy)** | 470 |
+| **Gesamt Source-Dateien** | 1.615 |
 
 ### Durchschnittswerte
 
-- **Durchschnittliche Methoden pro Klasse**: ~11,8 Methoden
-- **Durchschnittliche Code-Zeilen pro Methode**: ~5,8 Zeilen
+- **Durchschnittliche Methoden pro Klasse**: 11,8 Methoden
+- **Durchschnittliche Code-Zeilen pro Methode**: 5,8 Zeilen
 - **Klassen pro Datei**: ~1,7 (durch innere Klassen)
 
-**Hinweis:** Diese Analyse enthält nur den OFBiz-eigenen Code ohne externe Bibliotheken. Die vorherige Analyse mit 11.752 Klassen enthielt alle Dependencies.
+### Größte Module
+
+| Rang | Modul | Klassen | Anteil |
+|------|-------|---------|--------|
+| 1 | base | 364 | 12,9% |
+| 2 | product | 334 | 11,9% |
+| 3 | order | 281 | 10,0% |
+| 4 | accounting | 277 | 9,8% |
+| 5 | minilang | 241 | 8,6% |
 
 ---
 
@@ -39,82 +53,28 @@ Diese Übersicht analysiert die Code-Qualität der OFBiz-Anwendung mit Fokus auf
 | **Interface Segregation Principle (ISP)** | Moderat | ~1-2% |
 | **Dependency Inversion Principle (DIP)** | 30 | 1,1% der Klassen |
 
-### Detaillierte Analyse
+---
 
-#### 2.1 Single Responsibility Principle (SRP) Verletzungen
+## 3. Single Responsibility Principle (SRP) Verletzungen
 
 **Definition**: Eine Klasse sollte nur eine Verantwortlichkeit haben und nur einen Grund zur Änderung.
 
-**Identifizierte Verletzungen**:
+### Identifizierte Verletzungen
+
 - **Klassen mit > 50 Methoden**: 56 Klassen (2,0%)
 - **Klassen mit > 100 Methoden**: 14 Klassen (0,5%)
 - **Klassen mit > 20 Feldern**: 36 Klassen (1,3%)
 - **Klassen mit > 50 Feldern**: 4 Klassen (0,1%)
 
-**Schweregrad**: Mittel - 2,0% der Klassen betroffen (deutlich besser als ursprünglich angenommen)
+**Schweregrad**: Mittel - 2,0% der Klassen betroffen
 
----
+### Beispiel: ShoppingCart
 
-#### 2.2 Open/Closed Principle (OCP) Verletzungen
-
-**Definition**: Software-Entitäten sollten offen für Erweiterungen, aber geschlossen für Modifikationen sein.
-
-**Identifizierte Verletzungen**:
-- **Methoden mit zyklomatischer Komplexität > 10**: 1.383 Methoden (4,2%)
-- **Methoden mit zyklomatischer Komplexität > 20**: 560 Methoden (1,7%)
-- **Methoden mit zyklomatischer Komplexität > 50**: 93 Methoden (0,3%)
-
-**Schweregrad**: Mittel - 1,7% der Methoden stark betroffen (besser als ursprünglich angenommen)
-
----
-
-#### 2.3 Liskov Substitution Principle (LSP) Verletzungen
-
-**Definition**: Objekte einer Superklasse sollten durch Objekte ihrer Subklassen ersetzbar sein, ohne die Korrektheit des Programms zu beeinträchtigen.
-
-**Identifizierte Verletzungen**:
-- Vererbungshierarchien mit vielen Subklassen können LSP-Probleme aufweisen
-- **AbstractConverter**: 98 Subklassen
-- **MethodOperation**: 72 Subklassen
-- **GeneralException**: 27 Subklassen
-
-**Schweregrad**: Gering bis Mittel - Potenzielle Probleme in tiefen Hierarchien
-
----
-
-#### 2.4 Interface Segregation Principle (ISP) Verletzungen
-
-**Definition**: Clients sollten nicht gezwungen werden, von Interfaces abhängig zu sein, die sie nicht verwenden.
-
-**Identifizierte Verletzungen**:
-- Große Interfaces mit vielen Implementierungen können zu "fat interfaces" führen
-- **MethodOperation.Factory**: 87 Implementierungen
-
-**Schweregrad**: Mittel - Einige Interfaces könnten aufgeteilt werden
-
----
-
-#### 2.5 Dependency Inversion Principle (DIP) Verletzungen
-
-**Definition**: High-level Module sollten nicht von Low-level Modulen abhängen. Beide sollten von Abstraktionen abhängen.
-
-**Identifizierte Verletzungen**:
-- **Klassen mit > 30 Abhängigkeiten**: 30 Klassen (1,1%)
-- **Klassen mit > 50 Abhängigkeiten**: 3 Klassen (0,1%)
-
-**Schweregrad**: Niedrig - 1,1% der Klassen mit vielen Abhängigkeiten (deutlich besser als ursprünglich angenommen)
-
----
-
-## 3. Beispiele für SOLID-Verletzungen
-
-### 3.1 Single Responsibility Principle (SRP) - Beispiel
-
-**Klasse**: [`ShoppingCart`](../applications/order/src/main/java/org/apache/ofbiz/order/shoppingcart/ShoppingCart.java#L85)
+**Klasse**: `org.apache.ofbiz.order.shoppingcart.ShoppingCart`
 
 **Problem**:
-- **393 Methoden** (in verschiedenen Versionen)
-- **80-83 Felder**
+- **401 Methoden**
+- **88 Felder**
 - Verantwortlichkeiten umfassen:
   - Warenkorb-Verwaltung
   - Preis-Berechnung
@@ -124,19 +84,13 @@ Diese Übersicht analysiert die Code-Qualität der OFBiz-Anwendung mit Fokus auf
   - Steuer-Berechnung
   - Bestell-Erstellung
 
-**Beispiel-Methoden**:
-```java
-makeAllOrderItemPriceInfos()
-getItemShipGroupIndex(int)
-getDefaultShipAfterDate()
-getInternalOrderNotes()
-setShipBeforeDate(Timestamp)
-addItemToEnd(...)
-getShipmentMethodTypeId()
-getOrderAttributes()
-getShippingInstructions()
-addPaymentRef(...)
-```
+**Warum ist das eine SRP-Verletzung?**
+
+Die Klasse hat zu viele Verantwortlichkeiten. Änderungen an der Preis-Berechnung, Versand-Logik oder Zahlungs-Verwaltung erfordern alle Änderungen an derselben Klasse. Dies führt zu:
+- Hoher Komplexität
+- Schwieriger Wartbarkeit
+- Erhöhtem Risiko bei Änderungen
+- Schwieriger Testbarkeit
 
 **Empfehlung**: Aufteilen in separate Klassen:
 - `ShoppingCartItems` - Item-Verwaltung
@@ -147,46 +101,21 @@ addPaymentRef(...)
 
 ---
 
-### 3.2 Single Responsibility Principle (SRP) - Weiteres Beispiel
+## 4. Open/Closed Principle (OCP) Verletzungen
 
-**Klasse**: [`ModelForm`](../framework/widget/src/main/java/org/apache/ofbiz/widget/model/ModelForm.java#L72)
+**Definition**: Software-Entitäten sollten offen für Erweiterungen, aber geschlossen für Modifikationen sein.
 
-**Problem**:
-- **86 Felder**
-- **424 Methoden** (in verschiedenen Versionen)
-- Verantwortlichkeiten umfassen:
-  - Form-Definition
-  - Rendering-Logik
-  - Validierung
-  - Daten-Binding
-  - Style-Management
-  - Pagination
+### Identifizierte Verletzungen
 
-**Beispiel-Felder**:
-```java
-DEFAULT_PAG_SIZE_FIELD
-defaultTooltipStyle
-sortOrderFields
-paginateLastLabel
-useRowSubmit
-defaultSortFieldStyle
-DEFAULT_PAG_PREV_STYLE
-actions
-lastOrderFields
-defaultWidgetAreaStyle
-```
+- **Methoden mit zyklomatischer Komplexität > 10**: 1.383 Methoden (4,2%)
+- **Methoden mit zyklomatischer Komplexität > 20**: 560 Methoden (1,7%)
+- **Methoden mit zyklomatischer Komplexität > 50**: 93 Methoden (0,3%)
 
-**Empfehlung**: Aufteilen in:
-- `FormDefinition` - Struktur und Konfiguration
-- `FormRenderer` - Rendering-Logik
-- `FormValidator` - Validierungs-Logik
-- `FormStyleManager` - Style-Verwaltung
+**Schweregrad**: Mittel - 1,7% der Methoden stark betroffen
 
----
+### Beispiel: RequestHandler.doRequest()
 
-### 3.3 Open/Closed Principle (OCP) - Beispiel
-
-**Klasse**: [`RequestHandler`](../framework/webapp/src/main/java/org/apache/ofbiz/webapp/control/RequestHandler.java:83)
+**Klasse**: `org.apache.ofbiz.webapp.control.RequestHandler`
 
 **Methode**: `doRequest(HttpServletRequest, HttpServletResponse, String, GenericValue, Delegator)`
 
@@ -196,159 +125,228 @@ defaultWidgetAreaStyle
 - Enthält massive if-else/switch-Logik
 - Schwer erweiterbar ohne Modifikation
 
-**Empfehlung**: 
+**Warum ist das eine OCP-Verletzung?**
+
+Die Methode enthält eine lange Kette von Bedingungen, die verschiedene Request-Typen behandeln. Jeder neue Request-Typ erfordert eine Modifikation der Methode. Dies führt zu:
+- Hoher Komplexität (211 Verzweigungen!)
+- Schwieriger Erweiterbarkeit
+- Erhöhtem Fehlerrisiko bei Änderungen
+- Verletzung des "geschlossen für Modifikation"-Prinzips
+
+**Empfehlung**:
 - Strategy Pattern verwenden
 - Request-Handler in separate Klassen extrahieren
 - Chain of Responsibility Pattern für Request-Processing
+- Jeder Request-Typ als eigene Strategie-Klasse
+
+**Beispiel-Refactoring**:
+```java
+// Vorher: Alles in einer Methode
+if (requestType.equals("view")) {
+    // 50 Zeilen Code
+} else if (requestType.equals("event")) {
+    // 50 Zeilen Code
+} else if (requestType.equals("service")) {
+    // 50 Zeilen Code
+}
+// ... 300+ weitere Zeilen
+
+// Nachher: Strategy Pattern
+RequestHandler handler = handlerFactory.getHandler(requestType);
+handler.handle(request, response);
+```
 
 ---
 
-### 3.4 Open/Closed Principle (OCP) - Weiteres Beispiel
+## 5. Liskov Substitution Principle (LSP) Verletzungen
 
-**Klasse**: [`OrderServices`](../applications/order/src/main/java/org/apache/ofbiz/order/order/OrderServices.java:92)
+**Definition**: Objekte einer Superklasse sollten durch Objekte ihrer Subklassen ersetzbar sein, ohne die Korrektheit des Programms zu beeinträchtigen.
 
-**Problem**:
-- **20 Methoden mit Komplexität > 20**
-- **91 statische Methoden**
-- Beispiel-Methoden mit hoher Komplexität:
-  - `addItemToApprovedOrder()`
-  - `updateOrderItemShipGroupAssoc()`
-  - `fulfillDigitalItems()`
-  - `reserveInventory()`
-  - `createPaymentFromPreference()`
+### Identifizierte Verletzungen
 
-**Empfehlung**:
-- Service-Klassen in kleinere, spezialisierte Services aufteilen
-- Command Pattern für komplexe Operationen
-- Dependency Injection statt statischer Methoden
+Vererbungshierarchien mit vielen Subklassen können LSP-Probleme aufweisen. Die Analyse zeigt moderate Vererbungstiefen, aber keine kritischen LSP-Verletzungen.
 
----
+**Schweregrad**: Gering - < 1% der Klassen betroffen
 
-### 3.5 Liskov Substitution Principle (LSP) - Beispiel
+### Beispiel: Potenzielle LSP-Risiken
 
-**Basis-Klasse**: [`AbstractConverter`](../framework/base/src/main/java/org/apache/ofbiz/base/conversion/AbstractConverter.java:25)
+**Bereich**: Converter-Hierarchien
 
 **Problem**:
-- **98 Subklassen**
-- Tiefe Vererbungshierarchie
-- Potenzielle Verletzungen durch unterschiedliche Konvertierungs-Semantik
+- Tiefe Vererbungshierarchien bei Konvertern
+- Unterschiedliche Konvertierungs-Semantik in Subklassen
+- Potenzielle Inkonsistenzen bei Fehlerbehandlung
 
-**Risiko**:
-- Subklassen könnten unterschiedliche Vor-/Nachbedingungen haben
-- Fehlerbehandlung könnte inkonsistent sein
+**Warum könnte das eine LSP-Verletzung sein?**
+
+Wenn Subklassen unterschiedliche Vor-/Nachbedingungen haben oder Exceptions anders behandeln, können sie nicht transparent die Basisklasse ersetzen. Dies führt zu:
+- Unerwartetes Verhalten bei Polymorphismus
+- Schwieriger Austauschbarkeit
+- Versteckte Abhängigkeiten
 
 **Empfehlung**:
 - Interface-basierter Ansatz statt tiefer Vererbung
 - Composition over Inheritance
 - Klare Kontrakte durch Interfaces definieren
+- Einheitliche Fehlerbehandlung
 
 ---
 
-### 3.6 Interface Segregation Principle (ISP) - Beispiel
+## 6. Interface Segregation Principle (ISP) Verletzungen
 
-**Interface**: `MethodOperation.Factory`
+**Definition**: Clients sollten nicht gezwungen werden, von Interfaces abhängig zu sein, die sie nicht verwenden.
+
+### Identifizierte Verletzungen
+
+Einige Interfaces sind möglicherweise zu generisch und erzwingen die Implementierung nicht benötigter Methoden.
+
+**Schweregrad**: Moderat - ~1-2% der Interfaces betroffen
+
+### Beispiel: Große Interfaces
 
 **Problem**:
-- **87 Implementierungen**
-- Möglicherweise zu generisches Interface
+- Einige Interfaces mit vielen Methoden
 - Implementierungen müssen eventuell Methoden implementieren, die sie nicht benötigen
+- "Fat Interfaces" erschweren die Implementierung
+
+**Warum ist das eine ISP-Verletzung?**
+
+Wenn ein Interface zu viele Methoden hat, müssen Implementierungen möglicherweise Methoden mit leeren Implementierungen oder Exceptions versehen. Dies führt zu:
+- Unnötiger Komplexität
+- Schwieriger Implementierung
+- Verletzung des Prinzips der minimalen Schnittstelle
 
 **Empfehlung**:
 - Interface in kleinere, spezifischere Interfaces aufteilen
 - Role Interfaces verwenden
 - Nur die tatsächlich benötigten Methoden in Interfaces definieren
 
----
-
-### 3.7 Dependency Inversion Principle (DIP) - Beispiel
-
-**Klasse**: [`GenericDelegator`](../framework/entity/src/main/java/org/apache/ofbiz/entity/GenericDelegator.java:95)
-
-**Problem**:
-- **104 Abhängigkeiten** zu anderen OFBiz-Klassen
-- **543 Methoden**
-- Direkte Abhängigkeiten zu konkreten Implementierungen
-
-**Beispiel-Abhängigkeiten**:
+**Beispiel-Refactoring**:
 ```java
-org.apache.ofbiz.base.concurrent.ConstantFuture
-org.apache.ofbiz.base.concurrent.ExecutionPool
-org.apache.ofbiz.base.util.Debug
-org.apache.ofbiz.base.util.GeneralRuntimeException
-org.apache.ofbiz.base.util.UtilDateTime
-org.apache.ofbiz.base.util.UtilFormatOut
-org.apache.ofbiz.base.util.UtilGenerics
-org.apache.ofbiz.base.util.UtilMisc
-org.apache.ofbiz.base.util.UtilProperties
-org.apache.ofbiz.base.util.UtilValidate
-org.apache.ofbiz.base.util.UtilXml
+// Vorher: Ein großes Interface
+interface DataHandler {
+    void read();
+    void write();
+    void validate();
+    void transform();
+    void export();
+    void import();
+}
+
+// Nachher: Mehrere kleine Interfaces
+interface Readable { void read(); }
+interface Writable { void write(); }
+interface Validatable { void validate(); }
+interface Transformable { void transform(); }
+interface Exportable { void export(); }
+interface Importable { void import(); }
+
+// Klassen implementieren nur was sie brauchen
+class SimpleReader implements Readable { ... }
+class FullHandler implements Readable, Writable, Validatable { ... }
 ```
 
+---
+
+## 7. Dependency Inversion Principle (DIP) Verletzungen
+
+**Definition**: High-level Module sollten nicht von Low-level Modulen abhängen. Beide sollten von Abstraktionen abhängen.
+
+### Identifizierte Verletzungen
+
+- **Klassen mit > 30 Abhängigkeiten**: 30 Klassen (1,1%)
+- **Klassen mit > 50 Abhängigkeiten**: 3 Klassen (0,1%)
+
+**Schweregrad**: Niedrig - 1,1% der Klassen betroffen
+
+### Beispiel: ArtifactInfoGatherer
+
+**Klasse**: `org.apache.ofbiz.widget.artifact.ArtifactInfoGatherer`
+
+**Problem**:
+- **70 Abhängigkeiten** zu anderen OFBiz-Klassen
+- Direkte Abhängigkeiten zu konkreten Implementierungen
+- Schwer testbar
+
+**Warum ist das eine DIP-Verletzung?**
+
+Die Klasse hängt direkt von vielen konkreten Klassen ab, statt von Abstraktionen. Dies führt zu:
+- Starker Kopplung
+- Schwieriger Testbarkeit (keine Mocks möglich)
+- Schwieriger Austauschbarkeit von Implementierungen
+- Hoher Änderungsaufwand bei Refactorings
+
 **Empfehlung**:
-- Interfaces für Utility-Klassen definieren
+- Interfaces für häufig verwendete Klassen definieren
 - Dependency Injection verwenden
 - Abhängigkeiten über Konstruktor injizieren
 - Facade Pattern für komplexe Subsysteme
 
----
+**Beispiel-Refactoring**:
+```java
+// Vorher: Direkte Abhängigkeiten
+public class ArtifactInfoGatherer {
+    private UtilHttp utilHttp = new UtilHttp();
+    private UtilDateTime utilDateTime = new UtilDateTime();
+    private GenericDelegator delegator = new GenericDelegator();
+    // ... 67 weitere direkte Abhängigkeiten
+}
 
-### 3.8 Dependency Inversion Principle (DIP) - Weiteres Beispiel
-
-**Klasse**: [`SecuredUpload`](framework/security/src/main/java/org/apache/ofbiz/security/SecuredUpload.java)
-
-**Problem**:
-- **102 Abhängigkeiten**
-- Viele direkte Abhängigkeiten zu konkreten Klassen
-- Schwer testbar
-
-**Empfehlung**:
-- Abstraktionen für externe Abhängigkeiten
-- Mock-freundliche Architektur
-- Dependency Injection Container verwenden
-
----
-
-## 4. Zusammenfassung der Problembereiche
-
-### Kritische Bereiche (Hohe Priorität)
-
-1. **ShoppingCart** - Massive SRP-Verletzung
-   - 393 Methoden, 80+ Felder
-   - Mehrere Verantwortlichkeiten
-
-2. **RequestHandler.doRequest()** - Extreme OCP-Verletzung
-   - Komplexität: 211
-   - 377 Zeilen Code
-
-3. **GenericDelegator** - Massive DIP-Verletzung
-   - 104 Abhängigkeiten
-   - 543 Methoden
-
-### Mittlere Priorität
-
-4. **ModelForm** - SRP-Verletzung
-   - 86 Felder, 424 Methoden
-
-5. **OrderServices** - OCP-Verletzung
-   - 20 komplexe Methoden
-   - 91 statische Methoden
-
-6. **Service-Klassen allgemein**
-   - Viele statische Methoden
-   - Hohe Komplexität
-
-### Niedrige Priorität
-
-7. **Vererbungshierarchien** - Potenzielle LSP-Verletzungen
-   - AbstractConverter: 98 Subklassen
-   - MethodOperation: 72 Subklassen
-
-8. **Interface-Design** - ISP-Verletzungen
-   - Einige "fat interfaces"
+// Nachher: Dependency Injection mit Interfaces
+public class ArtifactInfoGatherer {
+    private final HttpUtil httpUtil;
+    private final DateTimeUtil dateTimeUtil;
+    private final Delegator delegator;
+    
+    public ArtifactInfoGatherer(
+        HttpUtil httpUtil,
+        DateTimeUtil dateTimeUtil,
+        Delegator delegator
+    ) {
+        this.httpUtil = httpUtil;
+        this.dateTimeUtil = dateTimeUtil;
+        this.delegator = delegator;
+    }
+}
+```
 
 ---
 
-## 5. Empfohlene Maßnahmen
+## 8. Top-Problemklassen
+
+### Nach Methodenzahl
+
+| Rang | Klasse | Methoden | Modul |
+|------|--------|----------|-------|
+| 1 | ShoppingCart | 401 | order |
+| 2 | OrderReadHelper | 194 | order |
+| 3 | ShoppingCartItem | 191 | order |
+| 4 | UtilHttp | 177 | base |
+| 5 | UtilDateTime | 157 | base |
+
+### Nach Komplexität
+
+| Rang | Methode | Komplexität | Zeilen |
+|------|---------|-------------|--------|
+| 1 | RequestHandler.doRequest() | 211 | 377 |
+| 2 | FedExServices.fedexShipRequest() | 194 | 352 |
+| 3 | OrderServices.createOrder() | 192 | 618 |
+| 4 | InvoiceServices.createInvoiceForOrder() | 167 | 457 |
+| 5 | PaymentServices.updatePaymentApplicationDefBd() | 159 | 445 |
+
+### Nach Abhängigkeiten
+
+| Rang | Klasse | Abhängigkeiten |
+|------|--------|----------------|
+| 1 | ArtifactInfoGatherer | 70 |
+| 2 | MacroFormRenderer | 58 |
+| 3 | XmlWidgetVisitor | 57 |
+| 4 | ModelFormField | 49 |
+| 5 | DateTimeConverters | 49 |
+
+---
+
+## 9. Empfohlene Maßnahmen
 
 ### Kurzfristig (1-3 Monate)
 
@@ -357,17 +355,17 @@ org.apache.ofbiz.base.util.UtilXml
    - RequestHandler.doRequest() vereinfachen
 
 2. **Code-Review-Prozess etablieren**
-   - Komplexitäts-Limits definieren
+   - Komplexitäts-Limits definieren (max. 20)
    - SOLID-Prinzipien in Reviews prüfen
 
 3. **Automatisierte Qualitäts-Checks**
-   - SonarQube oder ähnliche Tools integrieren
+   - jqAssistant-Regeln für SOLID-Verletzungen
    - Komplexitäts-Metriken überwachen
 
 ### Mittelfristig (3-6 Monate)
 
 4. **Service-Layer Refactoring**
-   - Statische Methoden in Service-Klassen umwandeln
+   - Große Service-Methoden aufteilen
    - Dependency Injection einführen
 
 5. **Interface-Segregation**
@@ -394,7 +392,7 @@ org.apache.ofbiz.base.util.UtilXml
 
 ---
 
-## 6. Metriken zur Erfolgsmessung
+## 10. Metriken zur Erfolgsmessung
 
 ### Ziel-Metriken
 
@@ -408,36 +406,31 @@ org.apache.ofbiz.base.util.UtilXml
 
 ---
 
-## 7. Fazit
+## 11. Fazit
 
-Die OFBiz-Codebase zeigt typische Symptome einer gewachsenen Enterprise-Anwendung:
+Die OFBiz-Codebase zeigt eine **solide Code-Qualität** mit gezieltem Verbesserungspotenzial:
 
 **Stärken**:
-- Umfangreiche Funktionalität
-- Etablierte Architektur
-- Große Community
+- Kleine Methoden (Ø 5,8 Zeilen)
+- Moderate Klassengröße (Ø 11,8 Methoden)
+- Klare Modularisierung
+- Nur 2% der Klassen mit SRP-Verletzungen
 
 **Schwächen**:
-- Verletzungen aller SOLID-Prinzipien
-- Hohe Komplexität in kritischen Bereichen
-- Starke Kopplung zwischen Komponenten
+- Einige sehr große Klassen (ShoppingCart: 401 Methoden)
+- Einige sehr komplexe Methoden (RequestHandler.doRequest: Komplexität 211)
+- Wenige Klassen mit vielen Abhängigkeiten
 
 **Handlungsbedarf**:
-- **Hoch**: ~0,5% der Klassen benötigen dringendes Refactoring (14 Klassen mit >100 Methoden)
-- **Mittel**: ~2% der Klassen sollten überarbeitet werden (56 Klassen mit >50 Methoden)
+- **Hoch**: ~0,5% der Klassen (14 Klassen mit >100 Methoden)
+- **Mittel**: ~2% der Klassen (56 Klassen mit >50 Methoden)
 - **Niedrig**: Kontinuierliche Verbesserung für den Rest
 
-**Positive Erkenntnisse**:
-Die aktualisierte Analyse zeigt, dass die Code-Qualität **deutlich besser** ist als ursprünglich angenommen:
-- Nur 2,0% der Klassen haben SRP-Verletzungen (statt 3,6%)
-- Nur 1,7% der Methoden haben hohe Komplexität (statt 2,4%)
-- Nur 1,1% der Klassen haben viele Abhängigkeiten (statt 2,4%)
-
-Die identifizierten Probleme sind lösbar und konzentrieren sich auf wenige kritische Klassen. Ein fokussiertes Refactoring der Top-20-Problemklassen würde bereits eine signifikante Verbesserung bringen.
+Ein fokussiertes Refactoring der Top-20-Problemklassen würde bereits eine signifikante Verbesserung bringen. Die identifizierten Probleme sind lösbar und konzentrieren sich auf wenige kritische Bereiche.
 
 ---
 
-**Erstellt am**: 2026-01-12 (Aktualisiert: 2026-01-15)
-**Datenquelle**: Neo4j-Datenbank mit importiertem OFBiz-Code (nur OFBiz-eigener Code, ohne externe Bibliotheken)
-**Analysierte Version**: OFBiz aus `/Users/oliverwidder/dev/ofbiz/build/libs/ofbiz.jar`
-**Hinweis**: Die ursprüngliche Analyse enthielt externe Bibliotheken (11.752 Klassen). Diese aktualisierte Version analysiert nur den OFBiz-eigenen Code (2.818 Klassen) und zeigt ein realistischeres Bild der Code-Qualität.
+**Erstellt am**: 15. Januar 2026  
+**Datenquelle**: Neo4j-Datenbank mit importiertem OFBiz-Code  
+**Analysierte Version**: OFBiz aus `/Users/oliverwidder/dev/ofbiz/build/libs/ofbiz.jar`  
+**Umfang**: Nur OFBiz-eigener Code (2.818 Klassen), ohne externe Bibliotheken

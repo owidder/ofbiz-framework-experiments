@@ -6,9 +6,6 @@ set -e
 
 if [ $# -ne 1 ]; then
     echo "Usage: $0 <project_dir>"
-    echo ""
-    echo "Example:"
-    echo "  $0 /Users/oliverwidder/dev/ofbiz"
     exit 1
 fi
 
