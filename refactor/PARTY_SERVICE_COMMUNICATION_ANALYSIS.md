@@ -9,9 +9,9 @@ Diese Analyse listet alle Klassen des neuen Party Service, alle aufrufenden Klas
 | Kategorie | Anzahl | Empfehlung |
 |-----------|--------|------------|
 | **Party Service Klassen** | 11 | Im neuen Microservice |
-| **Aufrufende Klassen** | 21 | Benötigen Anpassung |
-| **Synchrone Aufrufe (REST)** | 19 | 90% der Fälle |
-| **Asynchrone Aufrufe (Kafka)** | 2 | 10% der Fälle |
+| **Aufrufende Klassen** | 43 | Benötigen Anpassung |
+| **Synchrone Aufrufe (REST)** | 40 | 93% der Fälle |
+| **Asynchrone Aufrufe (Kafka)** | 3 | 7% der Fälle |
 
 ## 1. Party Service - Interne Klassen
 
@@ -50,7 +50,7 @@ Diese Klassen werden Teil des neuen Party Microservice:
 
 ## 2. Aufrufende Klassen - Detaillierte Analyse
 
-### 2.1 Order Module (7 Klassen)
+### 2.1 Order Module (21 Klassen)
 
 #### 2.1.1 ShoppingCart
 **FQN:** `org.apache.ofbiz.order.shoppingcart.ShoppingCart`
@@ -192,6 +192,220 @@ Response Time SLA: < 100ms (p95)
 
 ---
 
+#### 2.1.6 CheckInits
+**FQN:** `org.apache.ofbiz.order.entry.CheckInits`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - Kontaktdaten beim Checkout-Init
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Checkout-Initialisierung benötigt sofortige Daten
+- ✅ Benutzer wartet auf Checkout-Start
+
+---
+
+#### 2.1.7 CheckoutOptions
+**FQN:** `org.apache.ofbiz.order.entry.CheckoutOptions`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - Kontaktdaten für Checkout-Optionen
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Teil des Checkout-Flows
+- ✅ Benutzer-Interaktion erforderlich
+
+---
+
+#### 2.1.8 CheckoutReview
+**FQN:** `org.apache.ofbiz.order.entry.CheckoutReview`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - Kontaktdaten
+- `PartyWorker` - Party-Namen
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Checkout-Review ist kritischer Pfad
+- ✅ Benutzer prüft Bestelldaten vor Abschluss
+
+---
+
+#### 2.1.9 CheckoutShippingAddress
+**FQN:** `org.apache.ofbiz.order.entry.CheckoutShippingAddress`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - Lieferadressen
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Adressauswahl im Checkout
+- ✅ Sofortige Validierung erforderlich
+
+---
+
+#### 2.1.10 OptionSettings
+**FQN:** `org.apache.ofbiz.order.entry.OptionSettings`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - Kontaktdaten für Optionen
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Benutzer konfiguriert Bestelloptionen
+- ✅ Interaktiver Prozess
+
+---
+
+#### 2.1.11 ShipSettings
+**FQN:** `org.apache.ofbiz.order.entry.ShipSettings`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - Versandeinstellungen
+- `ContactMechWorker` - Versandadressen (via Closure)
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Versandeinstellungen im Checkout
+- ✅ Benutzer wartet auf Optionen
+
+---
+
+#### 2.1.12 SplitShip
+**FQN:** `org.apache.ofbiz.order.entry.SplitShip`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - Mehrere Lieferadressen
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Split-Shipment-Konfiguration
+- ✅ Interaktiver Prozess
+
+---
+
+#### 2.1.13 CompanyHeader
+**FQN:** `org.apache.ofbiz.order.order.CompanyHeader`
+
+**Verwendete Party-Klassen:**
+- `PartyContentWrapper` - Firmen-Logo/Content
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Header-Rendering benötigt Firmendaten
+- ✅ Teil der Seitenansicht
+
+---
+
+#### 2.1.14 OrderView
+**FQN:** `org.apache.ofbiz.order.order.OrderView`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - Kontaktdaten
+- `ContactMechWorker` - Adressen
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Bestellansicht benötigt Party-Daten sofort
+- ✅ Benutzer-Interaktion
+
+---
+
+#### 2.1.15 QuickReturn
+**FQN:** `org.apache.ofbiz.order.orderReturn.QuickReturn`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - Kontaktdaten für Retoure
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Retouren-Prozess ist interaktiv
+- ✅ Benutzer wartet auf Bestätigung
+
+---
+
+#### 2.1.16 ReturnHeader
+**FQN:** `org.apache.ofbiz.order.orderReturn.ReturnHeader`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - Kontaktdaten
+- `ContactMechWorker` - Rücksendeadressen
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Retouren-Header benötigt Party-Daten
+- ✅ Teil der Retouren-Ansicht
+
+---
+
+#### 2.1.17 GetPartyAddress
+**FQN:** `org.apache.ofbiz.order.quote.GetPartyAddress`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - Adressen für Angebote
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Angebotserstellung benötigt Adresse sofort
+- ✅ Geschäftsprozess
+
+---
+
+#### 2.1.18 GetPartyEmailAddress
+**FQN:** `org.apache.ofbiz.order.quote.GetPartyEmailAddress`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - E-Mail-Adressen für Angebote
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Angebotserstellung benötigt E-Mail sofort
+- ✅ Geschäftsprozess
+
+---
+
+#### 2.1.19 CreateAllocationPlan
+**FQN:** `org.apache.ofbiz.order.allocationplan.CreateAllocationPlan$_run_closure1`
+
+**Verwendete Party-Klassen:**
+- `PartyHelper` - Party-Informationen für Allokationsplan
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Allokationsplan-Erstellung ist Geschäftsprozess
+- ✅ Benötigt Party-Daten für Planung
+
+---
+
+#### 2.1.20 ViewAllocationPlan
+**FQN:** `org.apache.ofbiz.order.allocationplan.ViewAllocationPlan$_run_closure1`
+
+**Verwendete Party-Klassen:**
+- `PartyHelper` - Party-Informationen für Ansicht
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Ansicht benötigt Party-Daten sofort
+- ✅ Benutzer-Interaktion
+
+---
+
 ### 2.2 Shipment Module (4 Klassen)
 
 #### 2.2.1 UpsServices
@@ -306,7 +520,7 @@ public void onShipmentCreated(ShipmentCreatedEvent event) {
 
 ---
 
-### 2.3 Accounting Module (2 Klassen)
+### 2.3 Accounting Module (6 Klassen)
 
 #### 2.3.1 PaymentGatewayServices
 **FQN:** `org.apache.ofbiz.accounting.payment.PaymentGatewayServices`
@@ -382,7 +596,63 @@ String stateGeoId = address.getStateProvinceGeoId();
 
 ---
 
-### 2.4 Product Module (2 Klassen)
+#### 2.3.3 BalanceSheet
+**FQN:** `org.apache.ofbiz.accounting.reports.BalanceSheet`
+
+**Verwendete Party-Klassen:**
+- `PartyWorker` - Party-Namen für Bilanz-Report
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Report-Generierung benötigt Party-Daten
+- ✅ Benutzer wartet auf Report
+
+---
+
+#### 2.3.4 CashFlowStatement
+**FQN:** `org.apache.ofbiz.accounting.reports.CashFlowStatement`
+
+**Verwendete Party-Klassen:**
+- `PartyWorker` - Party-Namen für Cashflow-Report
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Report-Generierung benötigt Party-Daten
+- ✅ Benutzer wartet auf Report
+
+---
+
+#### 2.3.5 IncomeStatement
+**FQN:** `org.apache.ofbiz.accounting.reports.IncomeStatement`
+
+**Verwendete Party-Klassen:**
+- `PartyWorker` - Party-Namen für GuV-Report
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Report-Generierung benötigt Party-Daten
+- ✅ Benutzer wartet auf Report
+
+---
+
+#### 2.3.6 TrialBalance
+**FQN:** `org.apache.ofbiz.accounting.reports.TrialBalance$_run_closure1`
+
+**Verwendete Party-Klassen:**
+- `PartyHelper` - Party-Informationen für Saldenliste
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Report-Generierung benötigt Party-Daten
+- ✅ Benutzer wartet auf Report
+
+---
+
+### 2.4 Product Module (6 Klassen)
 
 #### 2.4.1 ProductStoreWorker
 **FQN:** `org.apache.ofbiz.product.store.ProductStoreWorker`
@@ -416,9 +686,146 @@ String stateGeoId = address.getStateProvinceGeoId();
 
 ---
 
-### 2.5 Weitere Module (6 Klassen)
+#### 2.4.3 EditContactMech (Facility)
+**FQN:** `org.apache.ofbiz.product.facility.facility.EditContactMech`
 
-#### 2.5.1 LoginEvents (SecurityExt)
+**Verwendete Party-Klassen:**
+- `ContactMechWorker` - Kontaktdaten für Facility
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Bearbeitung von Kontaktdaten ist interaktiv
+- ✅ Benutzer wartet auf Validierung
+
+---
+
+#### 2.4.4 ViewContactMechs (Facility)
+**FQN:** `org.apache.ofbiz.product.facility.facility.ViewContactMechs`
+
+**Verwendete Party-Klassen:**
+- `ContactMechWorker` - Kontaktdaten-Anzeige
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Ansicht benötigt Kontaktdaten sofort
+- ✅ Benutzer-Interaktion
+
+---
+
+#### 2.4.5 ShipmentServices (Product)
+**FQN:** `org.apache.ofbiz.product.shipment.ShipmentServices`
+
+**Verwendete Party-Klassen:**
+- `ContactMechWorker` - Versandadressen
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Versandprozess benötigt Adressen sofort
+- ✅ Geschäftsprozess
+
+---
+
+#### 2.4.6 PriceServicesScript
+**FQN:** `org.apache.ofbiz.product.product.price.PriceServicesScript$_getAssociatedPriceRulesConds_closure4`
+
+**Verwendete Party-Klassen:**
+- `PartyHelper` - Party-Informationen für Preisregeln
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Preisberechnung benötigt Party-Daten
+- ✅ Teil des Bestellprozesses
+
+---
+
+### 2.5 Marketing Module (2 Klassen)
+
+#### 2.5.1 CloneLead
+**FQN:** `org.apache.ofbiz.marketing.sfa.CloneLead`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - Kontaktdaten beim Lead-Klonen
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Lead-Klonen ist interaktiver Prozess
+- ✅ Benutzer wartet auf Ergebnis
+
+---
+
+#### 2.5.2 MergeContacts
+**FQN:** `org.apache.ofbiz.marketing.sfa.MergeContacts$_run_closure1`
+
+**Verwendete Party-Klassen:**
+- `ContactHelper` - Kontaktdaten beim Zusammenführen
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Kontakt-Merge ist interaktiver Prozess
+- ✅ Benutzer wartet auf Ergebnis
+
+---
+
+### 2.6 HumanRes Module (2 Klassen)
+
+#### 2.6.1 HumanResEvents
+**FQN:** `org.apache.ofbiz.humanres.HumanResEvents`
+
+**Verwendete Party-Klassen:**
+- `PartyHelper` - Mitarbeiter-Informationen
+
+**Kommunikationstyp:** 🔴 **ASYNCHRON (Kafka)**
+
+**Begründung:**
+- ✅ HR-Events sind oft Hintergrund-Prozesse
+- ✅ Keine sofortige Benutzer-Interaktion
+- ✅ Kann verzögert verarbeitet werden
+
+**Event-Pattern:**
+```java
+// HR Event published
+hrEventPublisher.publishEmployeeCreated(employeeId, partyId);
+
+// Party Service enriched Event (optional)
+@KafkaListener(topics = "hr-events")
+public void onEmployeeCreated(EmployeeCreatedEvent event) {
+    PartyDTO party = partyService.getParty(event.getPartyId());
+    // Weitere Verarbeitung
+}
+```
+
+**Kafka Topic:**
+```
+Topic: hr-events
+Event: EmployeeCreated, EmployeeUpdated, EmployeeTerminated
+Partition Key: partyId
+```
+
+---
+
+#### 2.6.2 CategoryTree
+**FQN:** `org.apache.ofbiz.humanres.category.CategoryTree$_run_closure1`
+
+**Verwendete Party-Klassen:**
+- `PartyHelper` - Party-Informationen für Kategoriebaum
+
+**Kommunikationstyp:** 🟢 **SYNCHRON (REST)**
+
+**Begründung:**
+- ✅ Kategoriebaum-Anzeige benötigt Party-Daten
+- ✅ Benutzer-Interaktion
+
+---
+
+### 2.7 Weitere Module (2 Klassen)
+
+#### 2.7.1 LoginEvents (SecurityExt)
 **FQN:** `org.apache.ofbiz.securityext.login.LoginEvents`
 
 **Verwendete Party-Klassen:**
@@ -432,7 +839,7 @@ String stateGeoId = address.getStateProvinceGeoId();
 
 ---
 
-#### 2.5.2 VCard (SFA)
+#### 2.7.2 VCard (SFA)
 **FQN:** `org.apache.ofbiz.sfa.vcard.VCard`
 
 **Verwendete Party-Klassen:**
@@ -520,18 +927,19 @@ Partition Key: partyId
 
 | Modul | Klassen | Synchron (REST) | Asynchron (Kafka) | Hybrid |
 |-------|---------|-----------------|-------------------|--------|
-| **Order** | 7 | 7 | 0 | 0 |
+| **Order** | 21 | 21 | 0 | 0 |
 | **Shipment** | 4 | 4 | 0 | 0 |
-| **Accounting** | 2 | 2 | 0 | 0 |
-| **Product** | 2 | 2 | 0 | 0 |
+| **Accounting** | 6 | 6 | 0 | 0 |
+| **Product** | 6 | 6 | 0 | 0 |
+| **Marketing** | 2 | 2 | 0 | 0 |
+| **HumanRes** | 2 | 1 | 1 | 0 |
 | **SecurityExt** | 1 | 1 | 0 | 0 |
 | **SFA** | 1 | 0 | 0 | 1 |
-| **HumanRes** | 1 | 0 | 1 | 0 |
-| **GESAMT** | **21** | **19 (90%)** | **1 (5%)** | **1 (5%)** |
+| **GESAMT** | **43** | **41 (95%)** | **1 (2%)** | **1 (2%)** |
 
 ### 3.2 Empfehlungen nach Use Case
 
-#### 🟢 SYNCHRON (REST) - 19 Klassen (90%)
+#### 🟢 SYNCHRON (REST) - 41 Klassen (95%)
 
 **Wann verwenden:**
 - ✅ Benutzer wartet auf Antwort
@@ -566,7 +974,7 @@ circuit_breaker:
 
 ---
 
-#### 🔴 ASYNCHRON (Kafka) - 1 Klasse (5%)
+#### 🔴 ASYNCHRON (Kafka) - 1 Klasse (2%)
 
 **Wann verwenden:**
 - ✅ Hintergrund-Prozesse
@@ -604,7 +1012,7 @@ topics:
 
 ---
 
-#### 🟡 HYBRID - 1 Klasse (5%)
+#### 🟡 HYBRID - 1 Klasse (2%)
 
 **Wann verwenden:**
 - ✅ Unterschiedliche Use Cases in derselben Klasse
@@ -872,11 +1280,11 @@ Week 11-12:
 
 ### 7.1 Kernaussagen
 
-✅ **90% Synchron (REST):** Die meisten Aufrufe benötigen sofortige Antworten
+✅ **95% Synchron (REST):** Die meisten Aufrufe benötigen sofortige Antworten
 
-✅ **5% Asynchron (Kafka):** Nur für Hintergrund-Prozesse (HR-Events)
+✅ **2% Asynchron (Kafka):** Nur für Hintergrund-Prozesse (HR-Events)
 
-✅ **5% Hybrid:** VCard-Export (einzeln synchron, batch asynchron)
+✅ **2% Hybrid:** VCard-Export (einzeln synchron, batch asynchron)
 
 ✅ **Klare API-Grenzen:** 11 Party-Klassen werden zu REST/GraphQL APIs
 
@@ -898,11 +1306,25 @@ Week 11-12:
 ⚠️ **Kritische Pfade:** Payment und Checkout sind hochkritisch
 - **Mitigation:** Niedrige Timeouts, Circuit Breaker, umfangreiche Tests
 
-⚠️ **Komplexität:** 21 Klassen müssen angepasst werden
+⚠️ **Komplexität:** 43 Klassen müssen angepasst werden (+22 mehr als ursprünglich erwartet)
 - **Mitigation:** ACL-Pattern, schrittweiser Rollout, Feature Flags
 
 ---
 
-**Erstellt:** 2026-01-11  
-**Basierend auf:** Neo4j Code-Analyse  
-**Status:** ✅ Bereit für Implementierung
+**Erstellt:** 2026-01-11
+**Aktualisiert:** 2026-01-17 (Nach Fehlerkorrektur in Neo4j-Daten)
+**Basierend auf:** Neo4j Code-Analyse
+**Status:** ✅ Aktualisiert und bereit für Implementierung
+
+## Änderungshistorie
+
+### 2026-01-17: Korrektur nach Neo4j-Datenbereinigung
+- **Aufrufende Klassen:** 21 → 43 (+22 Klassen)
+- **Order-Modul:** 7 → 21 Klassen (+14 neue Klassen aus order.entry, order.quote, order.allocationplan)
+- **Accounting-Modul:** 2 → 6 Klassen (+4 Report-Klassen)
+- **Product-Modul:** 2 → 6 Klassen (+4 Klassen aus facility und price)
+- **Neues Marketing-Modul:** 2 Klassen (CloneLead, MergeContacts)
+- **HumanRes-Modul:** 1 → 2 Klassen (+CategoryTree)
+- **Synchrone Aufrufe:** 90% → 95% (41 von 43 Klassen)
+- **Asynchrone Aufrufe:** 5% → 2% (1 von 43 Klassen)
+- **Hybrid:** 5% → 2% (1 von 43 Klassen)
