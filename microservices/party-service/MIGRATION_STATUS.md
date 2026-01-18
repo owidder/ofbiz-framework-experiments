@@ -1,7 +1,7 @@
 # Party Service PoC - Migration Status
 
-**Letzte Aktualisierung:** 2026-01-11 17:21 CET
-**Status:** ✅ Phase 1 Abgeschlossen
+**Letzte Aktualisierung:** 2026-01-18 16:28 CET
+**Status:** ✅ Phase 1 Abgeschlossen - Bereit für Phase 2
 
 ---
 
@@ -9,20 +9,38 @@
 
 Dieser Dokument trackt den Fortschritt der Migration des Party Service aus dem OFBiz-Monolithen in einen eigenständigen Microservice als Proof-of-Concept.
 
+**Basis-Dokumentation:**
+- [PARTY_SERVICE_INTERFACE_ANALYSIS.md](../../refactor/PARTY_SERVICE_INTERFACE_ANALYSIS.md) - Detaillierte Schnittstellenanalyse (257 Services, 42 Aufrufe)
+- [PARTY_SERVICE_MONOREPO_SETUP.md](../../refactor/PARTY_SERVICE_MONOREPO_SETUP.md) - Monorepo Setup Guide (aktualisiert)
+
+## Wichtige Kennzahlen
+
+| Metrik | Wert | Status |
+|--------|------|--------|
+| **Service-Definitionen** | 257 | Analysiert ✅ |
+| **Aufrufe aus anderen Modulen** | 42 | Identifiziert ✅ |
+| **REST Endpoints (geplant)** | 30+ | Design ausstehend |
+| **Kafka Events (geplant)** | 8+ | Design ausstehend |
+| **Gesamtdauer** | 12 Wochen | Woche 1 abgeschlossen |
+| **Team** | 2-3 Entwickler | TBD |
+
 ## Gesamtfortschritt
 
 ```
-Phase 1: Setup                    [██████████] 100% (5/5 Schritte) ✅
-Phase 2: Domain Model             [░░░░░░░░░░]   0% (0/4 Schritte)
-Phase 3: REST API                 [░░░░░░░░░░]   0% (0/4 Schritte)
-Phase 4: Integration              [░░░░░░░░░░]   0% (0/4 Schritte)
+Phase 0: Vorbereitung (Woche 1-2)  [█████░░░░░]  50% (5/10 Schritte) 🔄
+Phase 1: Implementierung (Woche 3-5) [░░░░░░░░░░]   0% (0/15 Schritte)
+Phase 2: Integration (Woche 6-7)     [░░░░░░░░░░]   0% (0/10 Schritte)
+Phase 3: Migration (Woche 8-9)       [░░░░░░░░░░]   0% (0/10 Schritte)
+Phase 4: Stabilisierung (Woche 10-12)[░░░░░░░░░░]   0% (0/10 Schritte)
 
-GESAMT:                           [█████░░░░░]  29% (5/17 Schritte)
+GESAMT:                              [██░░░░░░░░]  11% (5/45 Schritte)
 ```
 
 ---
 
-## Phase 1: Setup (Woche 1) - 40% Complete
+## Phase 0: Vorbereitung (Woche 1-2) - 50% Complete
+
+### ✅ Woche 1: Infrastruktur & Tooling (Abgeschlossen)
 
 ### ✅ Schritt 1: Verzeichnisstruktur erstellen
 **Status:** ✅ Abgeschlossen  
@@ -176,7 +194,178 @@ include 'microservices:party-service'
 
 ---
 
-## Phase 2: Domain Model (Woche 2) - 0% Complete
+### 🔄 Woche 2: Datenmodell & API-Design (Ausstehend)
+
+**Aufgaben:**
+- [ ] ~30 Party-Tabellen aus OFBiz identifizieren
+- [ ] ER-Diagramm erstellen
+- [ ] PostgreSQL-Schema generieren
+- [ ] Flyway Migrations erstellen (V1__create_party_tables.sql, etc.)
+- [ ] OpenAPI 3.0 Spezifikation schreiben (30+ Endpoints)
+- [ ] DTOs (Data Transfer Objects) definieren
+- [ ] Kafka Event-Schema definieren (Avro)
+- [ ] Test-Daten migrieren
+
+**Deliverables:**
+- PostgreSQL-Datenbank mit Party-Schema
+- OpenAPI 3.0 Spezifikation
+- Event-Schema (Avro)
+- API-Dokumentation
+
+**Referenz:** Siehe [PARTY_SERVICE_INTERFACE_ANALYSIS.md](../../refactor/PARTY_SERVICE_INTERFACE_ANALYSIS.md) Abschnitt 1 & 3
+
+---
+
+## Phase 1: Service-Implementierung (Woche 3-5) - 0% Complete
+
+### 🔄 Woche 3: Basis-Implementierung (Ausstehend)
+
+**Aufgaben:**
+- [ ] JPA Entities erstellen (Party, Person, PartyGroup, ContactMech, etc.)
+- [ ] Repositories implementieren (PartyRepository, ContactMechRepository)
+- [ ] Core Services (PartyService, ContactMechService, PartySearchService)
+- [ ] Unit Tests (>80% Coverage)
+
+**Deliverables:**
+- Lauffähiger Spring Boot Service
+- Basis-CRUD-Operationen funktionieren
+- Unit Tests grün
+
+### 🔄 Woche 4: REST API & Events (Ausstehend)
+
+**Aufgaben:**
+- [ ] REST Controller (PartyController, ContactMechController, SearchController)
+- [ ] DTOs und MapStruct Mapper
+- [ ] Kafka Event Publishing (PartyCreated, PartyUpdated, etc.)
+- [ ] Request Validation & Exception Handling
+- [ ] Swagger UI konfigurieren
+
+**Deliverables:**
+- Vollständige REST API (30+ Endpoints)
+- Event-Publishing funktioniert
+- Integration Tests
+- Postman Collection / OpenAPI Spec
+
+### 🔄 Woche 5: Caching & Performance (Ausstehend)
+
+**Aufgaben:**
+- [ ] Redis Caching für häufige Abfragen
+- [ ] Datenbank-Indizes optimieren
+- [ ] N+1 Query Problem lösen
+- [ ] Load Testing (JMeter/Gatling)
+- [ ] Performance-Ziel: < 100ms für einfache Queries
+
+**Deliverables:**
+- Caching implementiert
+- Performance-Ziele erreicht
+- Load-Test-Ergebnisse dokumentiert
+
+---
+
+## Phase 2: Integration mit OFBiz (Woche 6-7) - 0% Complete
+
+### 🔄 Woche 6: Anti-Corruption Layer (Ausstehend)
+
+**Aufgaben:**
+- [ ] PartyServiceAdapter in OFBiz implementieren
+- [ ] PartyServiceClient (REST Client mit Feign/RestTemplate)
+- [ ] Circuit Breaker (Resilience4j)
+- [ ] Feature Flags für schrittweise Umstellung
+- [ ] Dual-Read-Logik (neuer Service mit Fallback)
+
+**Deliverables:**
+- ACL implementiert
+- Dual-Write funktioniert
+- Fallback-Mechanismus getestet
+
+### 🔄 Woche 7: Code-Migration (42 Aufrufe) (Ausstehend)
+
+**Aufgaben:**
+- [ ] Order-Modul: 23 Aufrufe anpassen (3-4 Tage)
+- [ ] Product-Modul: 6 Aufrufe anpassen (1-2 Tage)
+- [ ] Accounting-Modul: 6 Aufrufe anpassen (1-2 Tage)
+- [ ] Weitere Module: 7 Aufrufe anpassen (1 Tag)
+  - Shipment: 4 Aufrufe
+  - Marketing: 2 Aufrufe
+  - HumanRes: 2 Aufrufe
+  - SFA: 1 Aufruf
+  - SecurityExt: 1 Aufruf
+
+**Deliverables:**
+- Alle Module nutzen ACL
+- Tests grün
+- Integration Tests erfolgreich
+
+**Referenz:** Siehe [PARTY_SERVICE_INTERFACE_ANALYSIS.md](../../refactor/PARTY_SERVICE_INTERFACE_ANALYSIS.md) Abschnitt 4
+
+---
+
+## Phase 3: Datenmigration & Cutover (Woche 8-9) - 0% Complete
+
+### 🔄 Woche 8: Datenmigration (Ausstehend)
+
+**Aufgaben:**
+- [ ] ETL-Script für Party-Daten (~30 Tabellen)
+- [ ] Test-Migration auf Staging
+- [ ] Daten-Validierung & Konsistenz-Checks
+- [ ] Migrations-Runbook erstellen
+- [ ] Rollback-Plan
+
+**Deliverables:**
+- Migrations-Script getestet
+- Daten erfolgreich migriert
+- Rollback-Plan vorhanden
+
+### 🔄 Woche 9: Cutover & Go-Live (Ausstehend)
+
+**Aufgaben:**
+- [ ] Produktions-Migration (2-4 Stunden Downtime)
+- [ ] Feature Flag aktivieren (10% Traffic)
+- [ ] Schrittweiser Traffic-Shift (25% → 50% → 75% → 100%)
+- [ ] Monitoring intensiv beobachten
+- [ ] Fehler-Logs analysieren
+
+**Deliverables:**
+- Party Service in Produktion
+- 100% Traffic auf neuem Service
+- Performance-Ziele erreicht (< 200ms 95th percentile)
+
+---
+
+## Phase 4: Stabilisierung & Optimierung (Woche 10-12) - 0% Complete
+
+### 🔄 Woche 10: Monitoring & Bugfixing (Ausstehend)
+
+**Aufgaben:**
+- [ ] Fehler aus Produktion analysieren und fixen
+- [ ] Performance-Optimierungen
+- [ ] Monitoring-Dashboards verfeinern
+- [ ] Alerting-Regeln anpassen
+
+### 🔄 Woche 11: Dokumentation (Ausstehend)
+
+**Aufgaben:**
+- [ ] API-Dokumentation vervollständigen
+- [ ] Runbooks für Operations
+- [ ] Architecture Decision Records (ADRs)
+- [ ] Lessons Learned dokumentieren
+
+### 🔄 Woche 12: Cleanup (Ausstehend)
+
+**Aufgaben:**
+- [ ] OFBiz Party-Code als deprecated markieren
+- [ ] Alte Party-Tabellen archivieren
+- [ ] Cleanup von Test-Code
+- [ ] Retrospektive mit Team
+
+**Deliverables:**
+- Stabiler Party Service (Uptime > 99.9%)
+- Vollständige Dokumentation
+- Team-Retrospektive durchgeführt
+
+---
+
+## Legacy: Phase 2 Domain Model (Alt - Woche 2) - 0% Complete
 
 ### 🔄 Schritt 1: JPA Entities erstellen
 **Status:** 🔄 Ausstehend
@@ -435,4 +624,330 @@ include 'microservices:party-service'
 
 ---
 
+## API-Spezifikation & Kommunikationsmuster
+
+### REST Endpoints (30+)
+
+#### Party Management (8 Endpoints)
+```
+GET    /api/v1/parties              - Liste aller Parties
+GET    /api/v1/parties/{id}         - Party Details
+POST   /api/v1/parties              - Neue Party erstellen
+PUT    /api/v1/parties/{id}         - Party aktualisieren
+DELETE /api/v1/parties/{id}         - Party löschen
+GET    /api/v1/parties/search       - Party suchen
+GET    /api/v1/parties/{id}/roles   - Party Rollen
+POST   /api/v1/parties/{id}/roles   - Rolle zuweisen
+```
+
+#### Contact Mechanism (8 Endpoints)
+```
+GET    /api/v1/parties/{id}/contacts           - Alle Kontakte
+POST   /api/v1/parties/{id}/contacts           - Kontakt hinzufügen
+PUT    /api/v1/parties/{id}/contacts/{cid}     - Kontakt aktualisieren
+DELETE /api/v1/parties/{id}/contacts/{cid}     - Kontakt löschen
+GET    /api/v1/parties/{id}/addresses          - Adressen
+GET    /api/v1/parties/{id}/phones             - Telefonnummern
+GET    /api/v1/parties/{id}/emails             - E-Mail-Adressen
+POST   /api/v1/parties/{id}/contacts/validate  - Kontakt validieren
+```
+
+#### Party Relationships (6 Endpoints)
+```
+GET    /api/v1/parties/{id}/relationships      - Beziehungen
+POST   /api/v1/parties/{id}/relationships      - Beziehung erstellen
+DELETE /api/v1/parties/{id}/relationships/{rid} - Beziehung löschen
+GET    /api/v1/relationships/types             - Beziehungstypen
+GET    /api/v1/parties/{id}/children           - Untergeordnete Parties
+GET    /api/v1/parties/{id}/parents            - Übergeordnete Parties
+```
+
+#### Person & PartyGroup (4 Endpoints)
+```
+POST   /api/v1/persons              - Person erstellen
+PUT    /api/v1/persons/{id}         - Person aktualisieren
+POST   /api/v1/party-groups         - PartyGroup erstellen
+PUT    /api/v1/party-groups/{id}    - PartyGroup aktualisieren
+```
+
+#### Batch Operations (4 Endpoints)
+```
+POST   /api/v1/parties/batch        - Mehrere Parties erstellen
+PUT    /api/v1/parties/batch        - Mehrere Parties aktualisieren
+POST   /api/v1/parties/import       - Parties importieren
+GET    /api/v1/parties/export       - Parties exportieren
+```
+
+### Kafka Events (8+)
+
+```
+party.created              - Neue Party erstellt
+party.updated              - Party aktualisiert
+party.deleted              - Party gelöscht
+party.role.assigned        - Rolle zugewiesen
+party.role.removed         - Rolle entfernt
+contact.added              - Kontakt hinzugefügt
+contact.updated            - Kontakt aktualisiert
+relationship.created       - Beziehung erstellt
+```
+
+### Hybrid-Kommunikationsmuster
+
+**Synchron (REST) - Wann?**
+- ✅ CRUD-Operationen
+- ✅ Validierung
+- ✅ Sofortige Antwort erforderlich
+
+**Asynchron (Kafka) - Wann?**
+- ✅ Benachrichtigungen
+- ✅ Audit-Logging
+- ✅ Eventual Consistency akzeptabel
+
+**Beispiel:**
+```java
+// 1. Synchroner Aufruf für Validierung
+PartyDTO party = partyClient.getParty(partyId);
+
+// 2. Asynchrones Event für Audit
+kafkaTemplate.send("party.accessed", new PartyAccessedEvent(partyId));
+
+// 3. Caching für Performance
+@Cacheable("parties")
+public PartyDTO getParty(String partyId) {
+    return partyClient.getParty(partyId);
+}
+```
+
+### Anti-Corruption Layer (ACL)
+
+**Implementierung:**
+```java
+@Service
+public class PartyServiceAdapter {
+    
+    @Autowired
+    private PartyServiceClient partyClient;
+    
+    @Autowired
+    private Delegator delegator;
+    
+    @Value("${party.service.enabled:false}")
+    private boolean partyServiceEnabled;
+    
+    public GenericValue getParty(String partyId) {
+        if (partyServiceEnabled) {
+            // Neuer Service
+            PartyDTO dto = partyClient.getParty(partyId);
+            return convertToGenericValue(dto);
+        } else {
+            // Fallback zu OFBiz
+            return delegator.findOne("Party",
+                UtilMisc.toMap("partyId", partyId), false);
+        }
+    }
+    
+    private GenericValue convertToGenericValue(PartyDTO dto) {
+        // DTO -> GenericValue Mapping
+        GenericValue party = delegator.makeValue("Party");
+        party.set("partyId", dto.getPartyId());
+        party.set("partyTypeId", dto.getPartyType());
+        // ... weitere Felder
+        return party;
+    }
+}
+```
+
+**Code-Anpassungen:**
+```java
+// ALT (OFBiz)
+GenericValue party = delegator.findOne("Party",
+    UtilMisc.toMap("partyId", partyId), false);
+
+// NEU (Party Service)
+PartyDTO party = partyServiceClient.getParty(partyId);
+```
+
+### Monitoring & Observability
+
+**Application Metrics:**
+- Request Rate (req/s)
+- Response Time (p50, p95, p99)
+- Error Rate (%)
+- Cache Hit Rate (%)
+
+**Critical Alerts:**
+- Error Rate > 1%
+- Response Time p95 > 500ms
+- Uptime < 99.9%
+- Data Inconsistency detected
+
+### Rollback-Strategie
+
+**Rollback-Prozess:**
+1. Feature Flag deaktivieren (10 Sekunden)
+2. Traffic auf OFBiz umleiten (1 Minute)
+3. Party Service stoppen (1 Minute)
+4. Daten-Reconciliation (1-2 Stunden)
+5. Post-Mortem (1 Tag)
+
+---
+
+## Zusammenfassung & Ausblick
+
+### Aktueller Stand (Stand: 18.01.2026)
+
+| Kategorie | Status | Details |
+|-----------|--------|---------|
+| **Phase 0: Vorbereitung** | 🔄 50% | Woche 1 ✅, Woche 2 ausstehend |
+| **Infrastruktur** | ✅ 100% | Monorepo, Spring Boot, Docker Compose |
+| **Analyse** | ✅ 100% | 257 Services, 42 Aufrufe identifiziert |
+| **API-Design** | 📋 0% | 30+ REST Endpoints, 8+ Kafka Events geplant |
+| **Implementierung** | 📋 0% | Woche 3-5 ausstehend |
+| **Integration** | 📋 0% | Woche 6-7 ausstehend |
+| **Migration** | 📋 0% | Woche 8-9 ausstehend |
+| **Go-Live** | 📋 0% | Woche 10-12 ausstehend |
+
+### Abgeschlossene Meilensteine ✅
+
+**Woche 1: Infrastruktur & Tooling (100%)**
+- ✅ Monorepo-Setup mit Gradle Multi-Project
+- ✅ Spring Boot 3.2.1 Skeleton
+- ✅ Docker Compose (PostgreSQL, Redis, Kafka)
+- ✅ Basis-Konfiguration (application.yml, Actuator)
+- ✅ Service läuft auf Port 8081
+- ✅ H2 In-Memory DB für Entwicklung
+
+**Analyse & Planung (100%)**
+- ✅ Neo4j-Analyse durchgeführt
+- ✅ 257 Service-Definitionen identifiziert
+- ✅ 42 Aufrufe aus anderen Modulen kartiert:
+  - Order: 23 Aufrufe
+  - Product: 6 Aufrufe
+  - Accounting: 6 Aufrufe
+  - Weitere: 7 Aufrufe (Shipment, Marketing, HumanRes, SFA, SecurityExt)
+- ✅ Detaillierter 12-Wochen-Plan erstellt
+- ✅ Kostenabschätzung: ~229.000 €
+- ✅ Schnittstellenanalyse dokumentiert
+
+### Nächste Schritte (Woche 2) 🔄
+
+**Priorität 1: Datenmodell (5 Tage)**
+1. [ ] ~30 Party-Tabellen aus OFBiz identifizieren
+2. [ ] ER-Diagramm erstellen
+3. [ ] PostgreSQL-Schema mit Flyway Migrations
+4. [ ] Test-Daten migrieren
+
+**Priorität 2: API-Design (3 Tage)**
+1. [ ] OpenAPI 3.0 Spezifikation (30+ Endpoints)
+2. [ ] DTOs definieren
+3. [ ] Kafka Event-Schema (Avro)
+4. [ ] API-Dokumentation
+
+### Wichtige Dokumente 📚
+
+| Dokument | Beschreibung | Status |
+|----------|--------------|--------|
+| [PARTY_SERVICE_INTERFACE_ANALYSIS.md](../../refactor/PARTY_SERVICE_INTERFACE_ANALYSIS.md) | Vollständige Schnittstellenanalyse (257 Services, 42 Aufrufe) | ✅ Aktuell |
+| [PARTY_SERVICE_MONOREPO_SETUP.md](../../refactor/PARTY_SERVICE_MONOREPO_SETUP.md) | Setup-Anleitung mit aktualisierten Metriken | ✅ Aktuell |
+| [SERVICE_DECOMPOSITION_ANALYSIS.md](../../refactor/SERVICE_DECOMPOSITION_ANALYSIS.md) | Ursprüngliche Analyse & Kandidaten | ✅ Basis |
+| [MIGRATION_STATUS.md](MIGRATION_STATUS.md) | Dieser Status-Tracker | ✅ Aktuell |
+
+### Zeitplan & Budget 💰
+
+| Phase | Dauer | Status | Budget | Fortschritt |
+|-------|-------|--------|--------|-------------|
+| Phase 0: Vorbereitung | 2 Wochen | 🔄 50% | 18.000 € | ████████░░ |
+| Phase 1: Implementierung | 3 Wochen | 📋 0% | 81.000 € | ░░░░░░░░░░ |
+| Phase 2: Integration | 2 Wochen | 📋 0% | 54.000 € | ░░░░░░░░░░ |
+| Phase 3: Migration | 2 Wochen | 📋 0% | 54.000 € | ░░░░░░░░░░ |
+| Phase 4: Stabilisierung | 3 Wochen | 📋 0% | 22.000 € | ░░░░░░░░░░ |
+| **Gesamt** | **12 Wochen** | **🔄 4%** | **229.000 €** | **█░░░░░░░░░** |
+
+### Risiken & Mitigation ⚠️
+
+**Hohe Risiken:**
+1. **Datenmigration** - 30 Tabellen, komplexe Beziehungen
+   - ✅ Mitigation: Ausführliche Tests auf Staging, Rollback-Plan
+2. **Performance** - Netzwerk-Latenz durch Service-Calls
+   - ✅ Mitigation: Caching (Redis), Batch-APIs, Monitoring
+3. **Daten-Konsistenz** - Dual-Write-Phase kritisch
+   - ✅ Mitigation: Transaktionale Outbox, Event Sourcing
+
+**Mittlere Risiken:**
+1. **42 Code-Stellen** müssen angepasst werden
+   - ✅ Mitigation: Anti-Corruption Layer, Feature Flags
+2. **Team-Kapazität** - 2-3 Entwickler benötigt
+   - ✅ Mitigation: Externe Unterstützung, Pair Programming
+
+### Erfolgskriterien ✅
+
+**Technisch:**
+- ✅ Performance: < 200ms (95th percentile)
+- ✅ Verfügbarkeit: > 99.9%
+- ✅ Test Coverage: > 80%
+- ✅ Zero Data Loss
+
+**Business:**
+- ✅ Keine Downtime > 4 Stunden
+- ✅ Alle 257 Services migriert
+- ✅ Alle 42 Aufrufe funktionieren
+- ✅ Dokumentation vollständig
+
+### Geschätzte Zeit bis Meilensteine ⏱️
+
+| Meilenstein | Zeitpunkt | Beschreibung |
+|-------------|-----------|--------------|
+| **MVP** | Ende Woche 5 | Basis-CRUD, REST API, Event Publishing |
+| **Integration** | Ende Woche 7 | ACL implementiert, 42 Aufrufe migriert |
+| **Production-Ready** | Ende Woche 12 | Vollständige Migration, Monitoring, Dokumentation |
+
+### Key Metrics 📊
+
+| Metrik | Aktuell | Ziel | Status |
+|--------|---------|------|--------|
+| Services identifiziert | 257 | 257 | ✅ 100% |
+| Aufrufe kartiert | 42 | 42 | ✅ 100% |
+| REST Endpoints | 0 | 30+ | 📋 0% |
+| Kafka Events | 0 | 8+ | 📋 0% |
+| JPA Entities | 0 | ~15 | 📋 0% |
+| Test Coverage | 0% | >80% | 📋 0% |
+| Performance (p95) | N/A | <200ms | 📋 N/A |
+| Uptime | N/A | >99.9% | 📋 N/A |
+
+### Kommunikationsmuster 🔄
+
+**Synchron (REST):**
+- CRUD-Operationen (Create, Read, Update, Delete)
+- Suche & Filterung
+- Validierung
+- ~30+ Endpoints geplant
+
+**Asynchron (Kafka):**
+- PartyCreated, PartyUpdated, PartyDeleted
+- ContactMechAdded, ContactMechUpdated
+- PartyRoleAssigned, PartyRelationshipCreated
+- ~8+ Events geplant
+
+### Nächste Aktionen (Priorisiert) 🎯
+
+1. **Sofort (diese Woche):**
+   - [ ] Party-Tabellen aus OFBiz extrahieren
+   - [ ] ER-Diagramm erstellen
+   - [ ] Erste Flyway Migration schreiben
+
+2. **Nächste Woche:**
+   - [ ] OpenAPI 3.0 Spezifikation
+   - [ ] JPA Entities implementieren
+   - [ ] Repositories erstellen
+
+3. **In 2 Wochen:**
+   - [ ] REST Controller implementieren
+   - [ ] Kafka Event Publishing
+   - [ ] Integration Tests
+
+---
+
 **Hinweis:** Dieses Dokument wird bei jedem Fortschritt aktualisiert.
+
+**Letzte Aktualisierung:** 2026-01-18 16:30 CET
+**Nächstes Review:** 2026-01-25 (Ende Woche 2)

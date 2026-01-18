@@ -4,9 +4,68 @@
 
 Dieses Dokumentations-Paket enthält eine umfassende Analyse der OFBiz-Codebase und einen detaillierten Refaktorierungs-Plan für die Transformation in eine Microservice-Architektur.
 
+**Letzte Aktualisierung:** 18. Januar 2026
+**Status:** ✅ Party Service Analyse abgeschlossen
+
 ---
 
 ## 📚 Dokumente im Paket
+
+### 🆕 Party Service Dokumentation (Neu - Januar 2026)
+
+#### 9. **PARTY_SERVICE_INTERFACE_ANALYSIS.md** - Detaillierte Schnittstellenanalyse
+- **Umfang:** ~50 Seiten (1.197 Zeilen)
+- **Zweck:** Vollständige Analyse aller Party Service Schnittstellen
+- **Zielgruppe:** Architekten, Tech-Leads, Entwickler
+- **Lesedauer:** 60 Minuten
+- **Inhalte:**
+  - 257 Service-Definitionen analysiert
+  - 42 Aufrufe aus anderen Modulen identifiziert
+  - 30+ REST Endpoints spezifiziert
+  - 8+ Kafka Events definiert
+  - Kommunikationsmuster (synchron/asynchron)
+  - Code-Anpassungen im Detail
+  - 12-Wochen Extraktionsplan
+  - Kostenabschätzung (~229.000 €)
+  - Risiken & Mitigation
+  - Erfolgskriterien
+
+#### 10. **PARTY_SERVICE_MONOREPO_SETUP.md** - Setup-Anleitung
+- **Umfang:** ~35 Seiten
+- **Zweck:** Praktische Anleitung für Monorepo-Setup
+- **Zielgruppe:** Entwickler, DevOps
+- **Lesedauer:** 40 Minuten
+- **Inhalte:**
+  - Monorepo-Struktur
+  - Gradle Multi-Project Setup
+  - Spring Boot 3.2.1 Konfiguration
+  - Docker Compose Setup
+  - Aktualisierte Metriken (257 Services, 42 Aufrufe)
+  - 12-Wochen Roadmap
+  - Troubleshooting
+  - Best Practices
+
+#### 11. **MIGRATION_STATUS.md** - Live Status-Tracking & Arbeitsplan
+- **Umfang:** ~35 Seiten
+- **Zweck:** Fortschritts-Tracking & praktischer Arbeitsplan
+- **Zielgruppe:** Projektmanager, Team, Entwickler
+- **Lesedauer:** 40 Minuten
+- **Inhalte:**
+  - Gesamtfortschritt (11% abgeschlossen)
+  - Phase 0: Vorbereitung (50% - Woche 1 ✅)
+  - Phase 1-4: Detaillierte Aufgaben mit Checklisten
+  - 30+ REST Endpoints spezifiziert
+  - 8+ Kafka Events definiert
+  - Anti-Corruption Layer Code-Beispiele
+  - Monitoring & Rollback-Strategie
+  - Wichtige Kennzahlen
+  - Nächste Schritte (Woche 2)
+  - Zeitplan & Budget
+  - Risiken & Erfolgskriterien
+
+---
+
+## 📚 Basis-Dokumente
 
 ### 1. **README.md** - Dokumentations-Index
 - **Umfang:** ~15 Seiten
@@ -175,6 +234,11 @@ Dieses Dokumentations-Paket enthält eine umfassende Analyse der OFBiz-Codebase 
 
 | Dokument | Seiten | Wörter | Queries | Code-Beispiele | Diagramme |
 |----------|--------|--------|---------|----------------|-----------|
+| **Party Service Dokumentation** | | | | | |
+| PARTY_SERVICE_INTERFACE_ANALYSIS.md | 50 | 15.000 | 10+ | 30+ | 8 |
+| PARTY_SERVICE_MONOREPO_SETUP.md | 35 | 10.500 | - | 20+ | 3 |
+| MIGRATION_STATUS.md | 35 | 10.500 | - | 35+ | 2 |
+| **Basis-Dokumente** | | | | | |
 | README.md | 15 | 4.500 | - | 5 | 3 |
 | EXECUTIVE_SUMMARY.md | 20 | 6.000 | - | 2 | 5 |
 | OFBIZ_ANALYSIS.md | 25 | 7.500 | 5 | 5 | 3 |
@@ -182,7 +246,8 @@ Dieses Dokumentations-Paket enthält eine umfassende Analyse der OFBiz-Codebase 
 | REFACTORING_STARTER_KIT.md | 25 | 7.500 | - | 20 | 2 |
 | NEO4J_QUERIES.md | 30 | 6.000 | 50+ | 50+ | - |
 | VISUALIZATIONS.md | 25 | 5.000 | - | - | 15 |
-| **GESAMT** | **170** | **45.500** | **55+** | **97** | **33** |
+| DOCUMENTATION_INDEX.md | 15 | 4.500 | - | - | 2 |
+| **GESAMT** | **305** | **86.500** | **65+** | **182+** | **48** |
 
 ---
 
@@ -346,7 +411,12 @@ Diese Dokumentation wurde überprüft auf:
 | Version | Datum | Änderungen |
 |---------|-------|-----------|
 | 1.0 | 2026-01-09 | Initiale Analyse und Dokumentation |
-| - | - | - |
+| 1.1 | 2026-01-18 | Party Service Dokumentation hinzugefügt (4 neue Dokumente) |
+| | | - PARTY_SERVICE_INTERFACE_ANALYSIS.md (257 Services, 42 Aufrufe) |
+| | | - PARTY_SERVICE_EXTRACTION_PLAN.md (12-Wochen Plan) |
+| | | - PARTY_SERVICE_MONOREPO_SETUP.md (Setup-Anleitung) |
+| | | - MIGRATION_STATUS.md (Status-Tracking) |
+| | | - Dokumentations-Statistiken aktualisiert (320 Seiten, 95.000 Wörter) |
 
 ---
 
@@ -444,14 +514,42 @@ Diese Dokumentation wurde erstellt mit Hilfe von:
 
 Sie haben jetzt ein **komplettes Dokumentations-Paket** mit:
 
-- ✅ **8 Dokumente** (~170 Seiten)
-- ✅ **45.500 Wörter** detaillierte Inhalte
-- ✅ **55+ Cypher-Queries** für Neo4j-Analysen
-- ✅ **97 Code-Beispiele** für schnelle Implementierung
-- ✅ **33 Diagramme** für Visualisierung
-- ✅ **Komplette Roadmap** für 4 Monate
+- ✅ **11 Dokumente** (~305 Seiten)
+- ✅ **86.500 Wörter** detaillierte Inhalte
+- ✅ **65+ Cypher-Queries** für Neo4j-Analysen
+- ✅ **182+ Code-Beispiele** für schnelle Implementierung
+- ✅ **48 Diagramme** für Visualisierung
+- ✅ **Komplette Roadmap** für 4 Monate + 12-Wochen Party Service Plan
 - ✅ **Praktische Checklisten** für jede Phase
 - ✅ **Best Practices** und Lösungen
+- ✅ **Party Service PoC** - Ready for Implementation
+
+### 🆕 Neu: Party Service Dokumentation (Januar 2026)
+
+**3 zusätzliche Dokumente** (~120 Seiten) für den Party Service als ersten Proof-of-Concept:
+
+1. **PARTY_SERVICE_INTERFACE_ANALYSIS.md** - Vollständige Schnittstellenanalyse
+   - 257 Service-Definitionen
+   - 42 Aufrufe aus anderen Modulen
+   - 30+ REST Endpoints
+   - 8+ Kafka Events
+   - Kommunikationsmuster
+   - 12-Wochen Plan
+
+2. **PARTY_SERVICE_MONOREPO_SETUP.md** - Praktische Setup-Anleitung
+   - Spring Boot 3.2.1
+   - Docker Compose
+   - Gradle Multi-Project
+   - Aktualisierte Metriken
+
+3. **MIGRATION_STATUS.md** - Live Status-Tracking & Arbeitsplan
+   - Aktueller Fortschritt: 11%
+   - Phase 0: 50% abgeschlossen
+   - Detaillierte Checklisten für alle Phasen
+   - REST Endpoints & Kafka Events spezifiziert
+   - Anti-Corruption Layer Code
+   - Monitoring & Rollback-Strategie
+   - Nächste Schritte priorisiert
 
 **Alles, was Sie brauchen, um OFBiz erfolgreich zu refaktorieren!**
 
