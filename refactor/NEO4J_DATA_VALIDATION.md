@@ -202,6 +202,23 @@ Bei der Überprüfung der "other"-Kategorie (1.563 Klassen) wurde festgestellt, 
 - `org.apache.ofbiz.common.*` - 80 Klassen
 - `org.apache.ofbiz.entityext.*` - 26 Klassen
 
+### Ursache
+
+**jqAssistant-Konfiguration ([`jqa-cli.conf`](../jqa-cli.conf:5)):**
+```
+jqassistant.scan.includes=/Users/oliverwidder/dev/ofbiz/build/classes/java/main
+```
+
+Der Scan wurde auf das **Gradle-Build-Verzeichnis** konfiguriert, das ALLE kompilierten Klassen enthält:
+
+```bash
+ls -la build/classes/java/main/org/apache/ofbiz/
+```
+
+**Ergebnis:** Das build-Verzeichnis enthält sowohl:
+- **Application-Module:** accounting, marketing, party, product, order, workeffort, manufacturing, humanres, content, sfa, shipment
+- **Framework-Module:** base, entity, service, widget, minilang, common, webapp, webtools, security, testtools
+
 ### Validierung
 
 ```bash
@@ -211,21 +228,28 @@ find applications -path "*/org/apache/ofbiz/base/*" -name "*.java"
 
 # base-Klassen sind im framework-Verzeichnis
 find framework -path "*/org/apache/ofbiz/base/*" -name "*.java" | head -5
-# Ergebnis: 
+# Ergebnis:
 # framework/start/src/test/java/org/apache/ofbiz/base/start/OfbizStartupUnitTests.java
 # framework/start/src/main/java/org/apache/ofbiz/base/start/StartupException.java
 # ...
+
+# Aber im build-Verzeichnis sind beide zusammen
+ls build/classes/java/main/org/apache/ofbiz/
+# Ergebnis: accounting, base, common, content, entity, marketing, party, product, service, widget, ...
 ```
 
 ### ⚠️ Schlussfolgerung
 
-**Der Import enthält auch Framework-Klassen, die nicht zum applications-Verzeichnis gehören.**
+**Der Import scannt kompilierte Klassen aus dem Gradle-Build, das sowohl Framework- als auch Application-Code enthält.**
 
-Dies bedeutet, dass der jqAssistant-Import nicht nur das `applications`-Verzeichnis erfasst hat, sondern auch Teile des `framework`-Verzeichnisses. Dies führt zu:
+Gradle kompiliert alle Module (framework + applications) in ein gemeinsames build-Verzeichnis. Der jqAssistant-Scan auf `build/classes/java/main` erfasst daher automatisch beide Bereiche.
 
-1. **Höheren Klassenzahlen** als erwartet
+**Auswirkungen:**
+
+1. **Höhere Klassenzahlen** als erwartet (2.818 statt ~263 Java-Dateien)
 2. **Vermischung von Application- und Framework-Code** in der Analyse
-3. **Potenziell verfälschten Abhängigkeitsanalysen**
+3. **Vollständige Abhängigkeitsanalyse möglich** - Framework-Abhängigkeiten sind sichtbar
+4. **Potenziell verfälschte Metriken** wenn nur Applications analysiert werden sollen
 
 ---
 
