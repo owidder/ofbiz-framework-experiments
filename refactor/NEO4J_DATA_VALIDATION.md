@@ -181,11 +181,11 @@ RETURN count(c)
 **Hinweis:** Die Differenz erklärt sich durch:
 1. Mehrere Klassen pro Datei (innere Klassen, die hier nicht gezählt wurden)
 2. Groovy-generierte Klassen (Closures)
-3. **PROBLEM:** Framework-Klassen wurden ebenfalls importiert (siehe unten)
+3. **Framework-Klassen sind ebenfalls enthalten** (siehe unten) - dies ist korrekt und gewünscht
 
 ---
 
-## 7. ⚠️ PROBLEM IDENTIFIZIERT: Framework-Klassen importiert
+## 7. ✅ Framework-Klassen sind ebenfalls importiert
 
 ### Analyse
 
@@ -238,34 +238,43 @@ ls build/classes/java/main/org/apache/ofbiz/
 # Ergebnis: accounting, base, common, content, entity, marketing, party, product, service, widget, ...
 ```
 
-### ⚠️ Schlussfolgerung
+### ✅ Schlussfolgerung
 
-**Der Import scannt kompilierte Klassen aus dem Gradle-Build, das sowohl Framework- als auch Application-Code enthält.**
+**Der Import scannt kompilierte Klassen aus dem Gradle-Build, das sowohl Framework- als auch Application-Code enthält - und das ist korrekt so!**
 
-Gradle kompiliert alle Module (framework + applications) in ein gemeinsames build-Verzeichnis. Der jqAssistant-Scan auf `build/classes/java/main` erfasst daher automatisch beide Bereiche.
+Gradle kompiliert alle Module (framework + applications) in ein gemeinsames build-Verzeichnis. Der jqAssistant-Scan auf `build/classes/java/main` erfasst daher die **gesamte OFBiz-Anwendung**.
 
-**Auswirkungen:**
+**Vorteile dieses Ansatzes:**
 
-1. **Höhere Klassenzahlen** als erwartet (2.818 statt ~263 Java-Dateien)
-2. **Vermischung von Application- und Framework-Code** in der Analyse
-3. **Vollständige Abhängigkeitsanalyse möglich** - Framework-Abhängigkeiten sind sichtbar
-4. **Potenziell verfälschte Metriken** wenn nur Applications analysiert werden sollen
+1. **Vollständige Codebase:** Alle Teile von OFBiz sind erfasst
+2. **Vollständige Abhängigkeitsanalyse:** Framework-Abhängigkeiten zwischen Applications und Framework sind sichtbar
+3. **Realistische Architekturanalyse:** Die tatsächliche Struktur mit Framework und Applications wird abgebildet
+4. **Service-Extraktion:** Framework-Services, die von Applications genutzt werden, sind identifizierbar
+
+**Hinweis für Analysen:**
+
+Die Unterscheidung zwischen Framework und Application ist weiterhin über die Package-Namen möglich:
+- **Framework:** `org.apache.ofbiz.base`, `entity`, `service`, `widget`, `minilang`, `common`, `webapp`, `webtools`, `security`, `testtools`
+- **Applications:** `org.apache.ofbiz.accounting`, `marketing`, `party`, `product`, `order`, `workeffort`, `manufacturing`, `humanres`, `content`, `sfa`, `shipment`
 
 ---
 
-## 8. Empfehlungen
+## 8. Verwendung für Analysen
 
-### Für zukünftige Imports
+### Gesamte OFBiz-Anwendung analysieren
 
-1. **Präzisere Scan-Konfiguration:** Sicherstellen, dass jqAssistant nur das `applications`-Verzeichnis scannt
-2. **Ausschluss von Framework-Klassen:** Explizite Exclude-Patterns für `framework/*` setzen
-3. **Validierung nach Import:** Stichproben durchführen, um unerwünschte Importe zu identifizieren
+Für eine vollständige Architekturanalyse alle Klassen verwenden:
 
-### Für die aktuelle Analyse
+```cypher
+MATCH (c:Type:Class)
+WHERE c.fqn STARTS WITH 'org.apache.ofbiz'
+RETURN count(c)
+```
 
-Wenn nur Application-Code analysiert werden soll:
+### Nur Application-Module analysieren
 
-**Cypher-Query mit Filter:**
+Wenn nur die Business-Applications (ohne Framework) analysiert werden sollen:
+
 ```cypher
 MATCH (c:Type:Class)
 WHERE c.fqn STARTS WITH 'org.apache.ofbiz'
@@ -285,25 +294,58 @@ AND (
 RETURN count(c)
 ```
 
+### Nur Framework-Module analysieren
+
+```cypher
+MATCH (c:Type:Class)
+WHERE c.fqn STARTS WITH 'org.apache.ofbiz'
+AND NOT (
+  c.fqn STARTS WITH 'org.apache.ofbiz.accounting' OR
+  c.fqn STARTS WITH 'org.apache.ofbiz.marketing' OR
+  c.fqn STARTS WITH 'org.apache.ofbiz.party' OR
+  c.fqn STARTS WITH 'org.apache.ofbiz.product' OR
+  c.fqn STARTS WITH 'org.apache.ofbiz.order' OR
+  c.fqn STARTS WITH 'org.apache.ofbiz.workeffort' OR
+  c.fqn STARTS WITH 'org.apache.ofbiz.manufacturing' OR
+  c.fqn STARTS WITH 'org.apache.ofbiz.humanres' OR
+  c.fqn STARTS WITH 'org.apache.ofbiz.content' OR
+  c.fqn STARTS WITH 'org.apache.ofbiz.sfa' OR
+  c.fqn STARTS WITH 'org.apache.ofbiz.shipment'
+)
+RETURN count(c)
+```
+
 ---
 
 ## 9. Zusammenfassung
 
-### ✅ Positive Befunde
+### ✅ Validierungsergebnisse
 
-1. **Korrekte Klassenerfassung:** Alle geprüften Application-Klassen wurden korrekt importiert
-2. **Vollständige Methodenerfassung:** Alle Methoden inkl. Signaturen wurden erfasst
-3. **Korrekte Felderfassung:** Klassenfelder mit Typ und Sichtbarkeit wurden erfasst
+1. **Vollständige Erfassung:** Alle geprüften Klassen (Application + Framework) wurden korrekt importiert
+2. **Methodenerfassung:** Alle Methoden inkl. Signaturen und Sichtbarkeit wurden erfasst
+3. **Felderfassung:** Klassenfelder mit Typ und Sichtbarkeit wurden erfasst
 4. **Vererbungshierarchie:** EXTENDS-Beziehungen wurden korrekt modelliert
 5. **Paketstruktur:** Die Package-Hierarchie ist konsistent
+6. **Framework-Integration:** Framework-Klassen sind enthalten und ermöglichen vollständige Abhängigkeitsanalysen
 
-### ⚠️ Probleme
+### Datenqualität
 
-1. **Framework-Klassen importiert:** Zusätzlich zu den Application-Klassen wurden auch ~1.563 Framework-Klassen importiert
-2. **Höhere Zahlen:** Die Gesamtzahl der Klassen ist höher als erwartet
+| Aspekt | Status | Details |
+|--------|--------|---------|
+| Klassenstruktur | ✅ Korrekt | Alle Klassen mit FQN erfasst |
+| Methoden | ✅ Korrekt | Signaturen und Sichtbarkeit vorhanden |
+| Felder | ✅ Korrekt | Typ und Sichtbarkeit vorhanden |
+| Vererbung | ✅ Korrekt | EXTENDS-Beziehungen modelliert |
+| Packages | ✅ Korrekt | Hierarchie konsistent |
+| Framework | ✅ Enthalten | Vollständige OFBiz-Anwendung |
 
 ### Fazit
 
-**Die Daten in Neo4j sind für die Application-Klassen konsistent und korrekt.** Allerdings wurden zusätzlich Framework-Klassen importiert, die bei Analysen berücksichtigt oder herausgefiltert werden müssen.
+**Die Daten in Neo4j sind vollständig, konsistent und korrekt.** Der Import umfasst die gesamte OFBiz-Anwendung (Framework + Applications), was für Refactoring-Analysen ideal ist, da:
 
-Für Refactoring-Analysen, die sich auf die Applications konzentrieren, sollten die Framework-Klassen in Queries explizit ausgeschlossen werden.
+1. **Abhängigkeiten sichtbar sind:** Wie Applications das Framework nutzen
+2. **Service-Extraktion möglich ist:** Framework-Services können identifiziert werden
+3. **Realistische Architektur:** Die tatsächliche Struktur wird abgebildet
+4. **Flexible Analysen:** Framework und Applications können getrennt oder zusammen analysiert werden
+
+Die Daten sind bereit für umfassende Architektur- und Refactoring-Analysen.
