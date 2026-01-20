@@ -6,7 +6,7 @@ Dieses Verzeichnis enthält eine umfassende Analyse und Strategie zur Umwandlung
 
 ### 1. Executive Summary & Übersicht
 
-- **[SERVICE_DECOMPOSITION_ANALYSIS.md](./SERVICE_DECOMPOSITION_ANALYSIS.md)** ⭐ **START HIER**
+- **[SERVICE_DECOMPOSITION_ANALYSIS.md](../microservices/party-service/SERVICE_DECOMPOSITION_ANALYSIS.md)** ⭐ **START HIER**
   - Vollständige Analyse der OFBiz-Codebasis
   - Service-Kandidaten und Priorisierung
   - Abhängigkeitsanalyse zwischen Modulen
@@ -52,7 +52,7 @@ Dieses Verzeichnis enthält eine umfassende Analyse und Strategie zur Umwandlung
 
 ### Für Entscheidungsträger
 
-1. Lesen Sie **[SERVICE_DECOMPOSITION_ANALYSIS.md](./SERVICE_DECOMPOSITION_ANALYSIS.md)** Abschnitt 1-3
+1. Lesen Sie **[SERVICE_DECOMPOSITION_ANALYSIS.md](../microservices/party-service/SERVICE_DECOMPOSITION_ANALYSIS.md)** Abschnitt 1-3
    - Verstehen Sie die Modulstruktur
    - Sehen Sie die Abhängigkeiten
    - Bewerten Sie die Service-Kandidaten
@@ -66,7 +66,7 @@ Dieses Verzeichnis enthält eine umfassende Analyse und Strategie zur Umwandlung
 
 ### Für Architekten
 
-1. Studieren Sie **[SERVICE_DECOMPOSITION_ANALYSIS.md](./SERVICE_DECOMPOSITION_ANALYSIS.md)** vollständig
+1. Studieren Sie **[SERVICE_DECOMPOSITION_ANALYSIS.md](../microservices/party-service/SERVICE_DECOMPOSITION_ANALYSIS.md)** vollständig
    - Bounded Contexts
    - Technische Patterns (ACL, Saga, Event Sourcing)
    - Technologie-Stack

@@ -5,7 +5,7 @@
 Dieser Guide beschreibt, wie der Party Service als Proof-of-Concept im selben OFBiz-Repository entwickelt wird, aber klar getrennt und unabhängig startbar ist.
 
 **Aktualisiert:** 18. Januar 2026
-**Basis:** [PARTY_SERVICE_INTERFACE_ANALYSIS.md](./PARTY_SERVICE_INTERFACE_ANALYSIS.md)
+**Basis:** [PARTY_SERVICE_INTERFACE_ANALYSIS.md](../microservices/party-service/PARTY_SERVICE_INTERFACE_ANALYSIS.md)
 **Status:** ✅ Aktualisiert mit neuen Zahlen und Erkenntnissen
 
 ### Wichtige Erkenntnisse aus der Interface-Analyse
@@ -770,7 +770,7 @@ Basierend auf der detaillierten Interface-Analyse:
 - Performance-Degradation durch Netzwerk-Calls
 - Team-Überforderung
 
-**Mitigation:** Siehe [PARTY_SERVICE_INTERFACE_ANALYSIS.md](./PARTY_SERVICE_INTERFACE_ANALYSIS.md) Abschnitt 6
+**Mitigation:** Siehe [PARTY_SERVICE_INTERFACE_ANALYSIS.md](../microservices/party-service/PARTY_SERVICE_INTERFACE_ANALYSIS.md) Abschnitt 6
 
 ## 11. Nächste Schritte (Priorisiert)
 
@@ -1035,8 +1035,8 @@ docker-compose up -d
 
 ## 14. Referenzen
 
-- [PARTY_SERVICE_INTERFACE_ANALYSIS.md](./PARTY_SERVICE_INTERFACE_ANALYSIS.md) - Detaillierte Schnittstellenanalyse
-- [SERVICE_DECOMPOSITION_ANALYSIS.md](./SERVICE_DECOMPOSITION_ANALYSIS.md) - Basis-Analyse
+- [PARTY_SERVICE_INTERFACE_ANALYSIS.md](../microservices/party-service/PARTY_SERVICE_INTERFACE_ANALYSIS.md) - Detaillierte Schnittstellenanalyse
+- [SERVICE_DECOMPOSITION_ANALYSIS.md](../microservices/party-service/SERVICE_DECOMPOSITION_ANALYSIS.md) - Basis-Analyse
 - [MICROSERVICES_ARCHITECTURE.md](./MICROSERVICES_ARCHITECTURE.md) - Architektur-Übersicht
 
 ---

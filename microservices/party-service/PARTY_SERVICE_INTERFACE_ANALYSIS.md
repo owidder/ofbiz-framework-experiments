@@ -6,7 +6,7 @@ Diese Analyse untersucht die Schnittstellen des Party-Service in OFBiz und entwi
 
 **Erstellungsdatum:** 17. Januar 2026  
 **Datenquelle:** Neo4j-Datenbank mit OFBiz-Code-Analyse via jqAssistant  
-**Basis-Analyse:** [`SERVICE_DECOMPOSITION_ANALYSIS.md`](./SERVICE_DECOMPOSITION_ANALYSIS.md)
+**Basis-Analyse:** [`SERVICE_DECOMPOSITION_ANALYSIS.md`](SERVICE_DECOMPOSITION_ANALYSIS.md)
 
 ---
 
@@ -1116,21 +1116,21 @@ party-service/
 ### 9.1 Wichtige Dateien
 
 **Service-Definitionen:**
-- [`applications/party/servicedef/services_party.xml`](../applications/party/servicedef/services_party.xml)
-- [`applications/party/servicedef/services_contact.xml`](../applications/party/servicedef/services_contact.xml)
-- [`applications/party/servicedef/services_communication.xml`](../applications/party/servicedef/services_communication.xml)
+- [`applications/party/servicedef/services_party.xml`](../../applications/party/servicedef/services_party.xml)
+- [`applications/party/servicedef/services_contact.xml`](../../applications/party/servicedef/services_contact.xml)
+- [`applications/party/servicedef/services_communication.xml`](../../applications/party/servicedef/services_communication.xml)
 
 **Java-Klassen:**
-- [`PartyServices.java`](../applications/party/src/main/java/org/apache/ofbiz/party/party/PartyServices.java)
-- [`ContactMechServices.java`](../applications/party/src/main/java/org/apache/ofbiz/party/contact/ContactMechServices.java)
-- [`PartyWorker.java`](../applications/party/src/main/java/org/apache/ofbiz/party/party/PartyWorker.java)
-- [`ContactMechWorker.java`](../applications/party/src/main/java/org/apache/ofbiz/party/contact/ContactMechWorker.java)
+- [`PartyServices.java`](../../applications/party/src/main/java/org/apache/ofbiz/party/party/PartyServices.java)
+- [`ContactMechServices.java`](../../applications/party/src/main/java/org/apache/ofbiz/party/contact/ContactMechServices.java)
+- [`PartyWorker.java`](../../applications/party/src/main/java/org/apache/ofbiz/party/party/PartyWorker.java)
+- [`ContactMechWorker.java`](../../applications/party/src/main/java/org/apache/ofbiz/party/contact/ContactMechWorker.java)
 
 ### 9.2 Referenzen
 
-- [SERVICE_DECOMPOSITION_ANALYSIS.md](./SERVICE_DECOMPOSITION_ANALYSIS.md) - Basis-Analyse
-- [MICROSERVICES_ARCHITECTURE.md](./MICROSERVICES_ARCHITECTURE.md) - Architektur-Übersicht
-- [NEO4J_QUERIES.md](./NEO4J_QUERIES.md) - Nützliche Queries
+- [SERVICE_DECOMPOSITION_ANALYSIS.md](SERVICE_DECOMPOSITION_ANALYSIS.md) - Basis-Analyse
+- [MICROSERVICES_ARCHITECTURE.md](../../refactor/MICROSERVICES_ARCHITECTURE.md) - Architektur-Übersicht
+- [NEO4J_QUERIES.md](../../refactor/NEO4J_QUERIES.md) - Nützliche Queries
 
 ### 9.3 Neo4j Queries für weitere Analysen
 
