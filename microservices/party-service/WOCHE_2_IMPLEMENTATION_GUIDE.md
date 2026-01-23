@@ -12,7 +12,7 @@ Woche 2 legt das Fundament für die gesamte Party-Service-Implementierung:
 - **Datenmodell:** Identifikation und Modellierung der ~30 Party-Tabellen aus OFBiz
 - **Datenbankschema:** PostgreSQL-Schema mit Flyway Migrations
 - **API-Design:** OpenAPI 3.0 Spezifikation mit 30+ REST Endpoints
-- **Event-Schema:** Kafka Event-Definitionen mit Avro
+- **Event-Schema:** Kafka Event-Definitionen
 - **DTOs:** Data Transfer Objects für API-Kommunikation
 
 ---
@@ -29,42 +29,12 @@ Woche 2 legt das Fundament für die gesamte Party-Service-Implementierung:
 3. Tabellenstruktur dokumentieren
 4. Beziehungen zwischen Tabellen kartieren
 
-**Prompt 1: Neo4j-Analyse für Party-Entities**
-```
-Analysiere die OFBiz Party-Entities mit Neo4j:
-
-1. Finde alle Entity-Definitionen im Party-Modul:
-   - Nutze den Neo4j-MCP-Server
-   - Suche nach Klassen in org.apache.ofbiz.party
-   - Identifiziere Entity-Definitionen (XML-basiert)
-
-2. Erstelle eine Liste aller Party-Tabellen mit:
-   - Tabellenname
-   - Primärschlüssel
-   - Wichtige Felder
-   - Beziehungen zu anderen Tabellen
-
-3. Priorisiere die Kern-Entities:
-   - Party (Basis-Entity)
-   - Person (extends Party)
-   - PartyGroup (extends Party)
-   - ContactMech (Kontaktmechanismen)
-   - PostalAddress, TelecomNumber, EmailAddress
-   - PartyRole (Rollen)
-   - PartyRelationship (Beziehungen)
-
-4. Dokumentiere in einer Markdown-Tabelle:
-   | Tabelle | Typ | Felder | Beziehungen | Priorität |
-   |---------|-----|--------|-------------|-----------|
-
-Speichere das Ergebnis in:
-microservices/party-service/docs/PARTY_ENTITIES_ANALYSIS.md
-```
-
 **Erwartetes Ergebnis:**
 - Dokumentation aller ~30 Party-Tabellen
 - Klare Priorisierung (Kern-Entities vs. erweiterte Entities)
 - Verständnis der Datenstruktur
+
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 1
 
 ---
 
@@ -72,32 +42,18 @@ microservices/party-service/docs/PARTY_ENTITIES_ANALYSIS.md
 
 **Ziel:** Visuelles Datenmodell für besseres Verständnis und Kommunikation.
 
-**Prompt 2: ER-Diagramm mit Mermaid**
-```
-Erstelle ein ER-Diagramm für das Party-Datenmodell:
-
+**Vorgehen:**
 1. Nutze Mermaid-Syntax für das Diagramm
-2. Zeige die wichtigsten Entities:
-   - Party (Abstract)
-   - Person, PartyGroup
-   - ContactMech (Abstract)
-   - PostalAddress, TelecomNumber, EmailAddress
-   - PartyRole
-   - PartyRelationship
-   - PartyContactMech (Junction Table)
+2. Zeige die wichtigsten Entities (Party, Person, PartyGroup, ContactMech, etc.)
+3. Zeige Beziehungen mit Kardinalitäten (1:1, 1:N, N:M)
+4. Zeige Vererbung (IS-A)
 
-3. Zeige Beziehungen:
-   - 1:1, 1:N, N:M
-   - Vererbung (IS-A)
-   - Assoziationen
+**Erwartetes Ergebnis:**
+- Visuelles ER-Diagramm (Mermaid)
+- Dokumentation des Datenmodells
+- Klares Verständnis der Beziehungen
 
-4. Füge Kardinalitäten hinzu
-
-Erstelle zwei Dateien:
-1. microservices/party-service/docs/PARTY_ER_DIAGRAM.md (Mermaid-Code)
-2. microservices/party-service/docs/PARTY_DATA_MODEL.md (Beschreibung)
-
-Beispiel Mermaid-Syntax:
+**Beispiel Mermaid-Syntax:**
 ```mermaid
 erDiagram
     PARTY ||--o{ PERSON : "is-a"
@@ -105,29 +61,19 @@ erDiagram
     PARTY ||--o{ PARTY_ROLE : "has"
     PARTY ||--o{ PARTY_CONTACT_MECH : "has"
 ```
-```
 
-**Erwartetes Ergebnis:**
-- Visuelles ER-Diagramm (Mermaid)
-- Dokumentation des Datenmodells
-- Klare Verständnis der Beziehungen
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 2
 
 ---
 
 ## Tag 2-3: PostgreSQL-Schema & Migrations (1.5 Tage)
 
-### Aufgabe 2.1: Flyway Migrations erstellen
+### Aufgabe 2.1: Flyway Migration V1 - Basis-Tabellen
 
-**Ziel:** PostgreSQL-Schema mit Flyway Migrations definieren.
+**Ziel:** PostgreSQL-Schema für Party-Basis-Tabellen erstellen.
 
-**Prompt 3: Flyway Migration V1 - Basis-Tabellen**
-```
-Erstelle die erste Flyway Migration für Party-Basis-Tabellen:
-
-Datei: src/main/resources/db/migration/V1__create_party_base_tables.sql
-
-Erstelle folgende Tabellen:
-1. party (Basis-Tabelle)
+**Tabellen:**
+1. **party** (Basis-Tabelle)
    - party_id VARCHAR(20) PRIMARY KEY
    - party_type_id VARCHAR(20) NOT NULL
    - status_id VARCHAR(20)
@@ -136,7 +82,7 @@ Erstelle folgende Tabellen:
    - last_modified_date TIMESTAMP
    - last_modified_by VARCHAR(20)
 
-2. person (extends party)
+2. **person** (extends party)
    - party_id VARCHAR(20) PRIMARY KEY REFERENCES party(party_id)
    - salutation VARCHAR(20)
    - first_name VARCHAR(100)
@@ -149,7 +95,7 @@ Erstelle folgende Tabellen:
    - birth_date DATE
    - marital_status VARCHAR(1)
 
-3. party_group (extends party)
+3. **party_group** (extends party)
    - party_id VARCHAR(20) PRIMARY KEY REFERENCES party(party_id)
    - group_name VARCHAR(100) NOT NULL
    - group_name_local VARCHAR(100)
@@ -159,29 +105,29 @@ Erstelle folgende Tabellen:
    - ticker_symbol VARCHAR(10)
    - comments TEXT
 
-Best Practices:
+**Best Practices:**
 - Nutze VARCHAR statt CHAR für Flexibilität
 - Füge created_date/last_modified_date für Auditing hinzu
 - Nutze REFERENCES für Foreign Keys
-- Füge Kommentare für komplexe Felder hinzu
+- Füge SQL-Kommentare für komplexe Felder hinzu
 
-Speichere in:
-microservices/party-service/src/main/resources/db/migration/V1__create_party_base_tables.sql
-```
+**Datei:** `src/main/resources/db/migration/V1__create_party_base_tables.sql`
 
-**Prompt 4: Flyway Migration V2 - ContactMech-Tabellen**
-```
-Erstelle die zweite Flyway Migration für ContactMech-Tabellen:
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 3
 
-Datei: src/main/resources/db/migration/V2__create_contact_mech_tables.sql
+---
 
-Erstelle folgende Tabellen:
-1. contact_mech (Basis-Tabelle)
+### Aufgabe 2.2: Flyway Migration V2 - ContactMech-Tabellen
+
+**Ziel:** PostgreSQL-Schema für Kontaktmechanismen erstellen.
+
+**Tabellen:**
+1. **contact_mech** (Basis-Tabelle)
    - contact_mech_id VARCHAR(20) PRIMARY KEY
    - contact_mech_type_id VARCHAR(20) NOT NULL
    - info_string VARCHAR(255)
 
-2. postal_address (extends contact_mech)
+2. **postal_address** (extends contact_mech)
    - contact_mech_id VARCHAR(20) PRIMARY KEY REFERENCES contact_mech(contact_mech_id)
    - to_name VARCHAR(100)
    - attn_name VARCHAR(100)
@@ -194,14 +140,14 @@ Erstelle folgende Tabellen:
    - latitude DECIMAL(10,6)
    - longitude DECIMAL(10,6)
 
-3. telecom_number (extends contact_mech)
+3. **telecom_number** (extends contact_mech)
    - contact_mech_id VARCHAR(20) PRIMARY KEY REFERENCES contact_mech(contact_mech_id)
    - country_code VARCHAR(3)
    - area_code VARCHAR(3)
    - contact_number VARCHAR(15) NOT NULL
    - extension VARCHAR(10)
 
-4. party_contact_mech (Junction Table)
+4. **party_contact_mech** (Junction Table)
    - party_id VARCHAR(20) REFERENCES party(party_id)
    - contact_mech_id VARCHAR(20) REFERENCES contact_mech(contact_mech_id)
    - from_date TIMESTAMP NOT NULL
@@ -212,25 +158,25 @@ Erstelle folgende Tabellen:
    - comments TEXT
    - PRIMARY KEY (party_id, contact_mech_id, from_date)
 
-Speichere in:
-microservices/party-service/src/main/resources/db/migration/V2__create_contact_mech_tables.sql
-```
+**Datei:** `src/main/resources/db/migration/V2__create_contact_mech_tables.sql`
 
-**Prompt 5: Flyway Migration V3 - Rollen & Beziehungen**
-```
-Erstelle die dritte Flyway Migration für Rollen und Beziehungen:
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 4
 
-Datei: src/main/resources/db/migration/V3__create_role_relationship_tables.sql
+---
 
-Erstelle folgende Tabellen:
-1. party_role
+### Aufgabe 2.3: Flyway Migration V3 - Rollen & Beziehungen
+
+**Ziel:** PostgreSQL-Schema für Party-Rollen und Beziehungen erstellen.
+
+**Tabellen:**
+1. **party_role**
    - party_id VARCHAR(20) REFERENCES party(party_id)
    - role_type_id VARCHAR(20) NOT NULL
    - from_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
    - thru_date TIMESTAMP
    - PRIMARY KEY (party_id, role_type_id)
 
-2. party_relationship
+2. **party_relationship**
    - party_id_from VARCHAR(20) REFERENCES party(party_id)
    - party_id_to VARCHAR(20) REFERENCES party(party_id)
    - role_type_id_from VARCHAR(20)
@@ -245,45 +191,45 @@ Erstelle folgende Tabellen:
    - comments TEXT
    - PRIMARY KEY (party_id_from, party_id_to, role_type_id_from, role_type_id_to, from_date)
 
-Speichere in:
-microservices/party-service/src/main/resources/db/migration/V3__create_role_relationship_tables.sql
-```
+**Datei:** `src/main/resources/db/migration/V3__create_role_relationship_tables.sql`
 
-**Prompt 6: Flyway Migration V4 - Indizes**
-```
-Erstelle die vierte Flyway Migration für Performance-Indizes:
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 5
 
-Datei: src/main/resources/db/migration/V4__create_indexes.sql
+---
 
-Erstelle Indizes für häufige Queries:
+### Aufgabe 2.4: Flyway Migration V4 - Indizes
 
-1. Party-Suche:
-   CREATE INDEX idx_party_type ON party(party_type_id);
-   CREATE INDEX idx_party_status ON party(status_id);
-   CREATE INDEX idx_person_name ON person(last_name, first_name);
-   CREATE INDEX idx_party_group_name ON party_group(group_name);
+**Ziel:** Performance-Indizes für häufige Queries erstellen.
 
-2. ContactMech-Suche:
-   CREATE INDEX idx_contact_mech_type ON contact_mech(contact_mech_type_id);
-   CREATE INDEX idx_postal_address_city ON postal_address(city);
-   CREATE INDEX idx_postal_address_postal_code ON postal_address(postal_code);
-   CREATE INDEX idx_telecom_number ON telecom_number(contact_number);
+**Indizes:**
 
-3. Beziehungen:
-   CREATE INDEX idx_party_contact_mech_party ON party_contact_mech(party_id);
-   CREATE INDEX idx_party_contact_mech_contact ON party_contact_mech(contact_mech_id);
-   CREATE INDEX idx_party_role_party ON party_role(party_id);
-   CREATE INDEX idx_party_role_type ON party_role(role_type_id);
-   CREATE INDEX idx_party_relationship_from ON party_relationship(party_id_from);
-   CREATE INDEX idx_party_relationship_to ON party_relationship(party_id_to);
+**Party-Suche:**
+- idx_party_type ON party(party_type_id)
+- idx_party_status ON party(status_id)
+- idx_person_name ON person(last_name, first_name)
+- idx_party_group_name ON party_group(group_name)
 
-4. Zeitbasierte Queries:
-   CREATE INDEX idx_party_created_date ON party(created_date);
-   CREATE INDEX idx_party_contact_mech_dates ON party_contact_mech(from_date, thru_date);
+**ContactMech-Suche:**
+- idx_contact_mech_type ON contact_mech(contact_mech_type_id)
+- idx_postal_address_city ON postal_address(city)
+- idx_postal_address_postal_code ON postal_address(postal_code)
+- idx_telecom_number ON telecom_number(contact_number)
 
-Speichere in:
-microservices/party-service/src/main/resources/db/migration/V4__create_indexes.sql
-```
+**Beziehungen:**
+- idx_party_contact_mech_party ON party_contact_mech(party_id)
+- idx_party_contact_mech_contact ON party_contact_mech(contact_mech_id)
+- idx_party_role_party ON party_role(party_id)
+- idx_party_role_type ON party_role(role_type_id)
+- idx_party_relationship_from ON party_relationship(party_id_from)
+- idx_party_relationship_to ON party_relationship(party_id_to)
+
+**Zeitbasierte Queries:**
+- idx_party_created_date ON party(created_date)
+- idx_party_contact_mech_dates ON party_contact_mech(from_date, thru_date)
+
+**Datei:** `src/main/resources/db/migration/V4__create_indexes.sql`
+
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 6
 
 **Erwartetes Ergebnis:**
 - 4 Flyway Migration-Dateien
@@ -294,147 +240,108 @@ microservices/party-service/src/main/resources/db/migration/V4__create_indexes.s
 
 ## Tag 3-4: API-Design (1.5 Tage)
 
-### Aufgabe 3.1: OpenAPI 3.0 Spezifikation
+### Aufgabe 3.1: OpenAPI Spezifikation - Party Management
 
-**Ziel:** Vollständige REST API-Spezifikation mit 30+ Endpoints.
+**Ziel:** REST API-Spezifikation für Party Management erstellen.
 
-**Prompt 7: OpenAPI Spezifikation - Party Management**
-```
-Erstelle eine OpenAPI 3.0 Spezifikation für den Party Service:
+**Endpoints (8):**
+- GET    /parties              - Liste aller Parties (mit Pagination)
+- GET    /parties/{id}         - Party Details
+- POST   /parties              - Neue Party erstellen
+- PUT    /parties/{id}         - Party aktualisieren
+- DELETE /parties/{id}         - Party löschen
+- GET    /parties/search       - Party suchen (Query-Parameter)
+- GET    /parties/{id}/roles   - Party Rollen
+- POST   /parties/{id}/roles   - Rolle zuweisen
 
-Datei: microservices/party-service/src/main/resources/openapi/party-service-api.yaml
+**Schemas:**
+- PartyDTO (mit discriminator für Person/PartyGroup)
+- PersonDTO (extends PartyDTO)
+- PartyGroupDTO (extends PartyDTO)
+- PartyRoleDTO
+- PagedResponse<T>
+- ErrorResponse
 
-Struktur:
-1. Metadata:
-   - Title: Party Service API
-   - Version: 1.0.0
-   - Description: Microservice für Party-Management
-   - Base URL: /api/v1
+**Security:**
+- Bearer Token (JWT)
 
-2. Party Management Endpoints (8):
-   GET    /parties              - Liste aller Parties (mit Pagination)
-   GET    /parties/{id}         - Party Details
-   POST   /parties              - Neue Party erstellen
-   PUT    /parties/{id}         - Party aktualisieren
-   DELETE /parties/{id}         - Party löschen
-   GET    /parties/search       - Party suchen (Query-Parameter)
-   GET    /parties/{id}/roles   - Party Rollen
-   POST   /parties/{id}/roles   - Rolle zuweisen
-
-3. Schemas definieren:
-   - PartyDTO (mit discriminator für Person/PartyGroup)
-   - PersonDTO (extends PartyDTO)
-   - PartyGroupDTO (extends PartyDTO)
-   - PartyRoleDTO
-   - PagedResponse<T>
-   - ErrorResponse
-
-4. Request/Response-Beispiele hinzufügen
-
-5. Security-Schema (Bearer Token):
-   securitySchemes:
-     bearerAuth:
-       type: http
-       scheme: bearer
-       bearerFormat: JWT
-
-Best Practices:
+**Best Practices:**
 - Nutze $ref für wiederverwendbare Schemas
 - Füge description für alle Felder hinzu
 - Definiere Validierungsregeln (required, minLength, pattern)
-- Füge Beispiele hinzu
+- Füge Request/Response-Beispiele hinzu
 
-Speichere in:
-microservices/party-service/src/main/resources/openapi/party-service-api.yaml
-```
+**Datei:** `src/main/resources/openapi/party-service-api.yaml`
 
-**Prompt 8: OpenAPI Spezifikation - Contact Management**
-```
-Erweitere die OpenAPI Spezifikation um Contact Management:
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 7
 
-Füge hinzu zu: microservices/party-service/src/main/resources/openapi/party-service-api.yaml
+---
 
-Contact Management Endpoints (8):
-   GET    /parties/{id}/contacts           - Alle Kontakte
-   POST   /parties/{id}/contacts           - Kontakt hinzufügen
-   PUT    /parties/{id}/contacts/{cid}     - Kontakt aktualisieren
-   DELETE /parties/{id}/contacts/{cid}     - Kontakt löschen
-   GET    /parties/{id}/addresses          - Adressen
-   GET    /parties/{id}/phones             - Telefonnummern
-   GET    /parties/{id}/emails             - E-Mail-Adressen
-   POST   /parties/{id}/contacts/validate  - Kontakt validieren
+### Aufgabe 3.2: OpenAPI Spezifikation - Contact Management
 
-Schemas:
-   - ContactMechDTO (mit discriminator)
-   - PostalAddressDTO (extends ContactMechDTO)
-   - TelecomNumberDTO (extends ContactMechDTO)
-   - EmailAddressDTO (extends ContactMechDTO)
-   - PartyContactMechDTO
+**Ziel:** REST API-Spezifikation für Contact Management erweitern.
 
-Beispiel PostalAddressDTO:
-```yaml
-PostalAddressDTO:
-  allOf:
-    - $ref: '#/components/schemas/ContactMechDTO'
-    - type: object
-      required:
-        - address1
-        - city
-      properties:
-        toName:
-          type: string
-          maxLength: 100
-        address1:
-          type: string
-          maxLength: 255
-          example: "123 Main Street"
-        city:
-          type: string
-          maxLength: 100
-          example: "San Francisco"
-        postalCode:
-          type: string
-          pattern: '^\d{5}(-\d{4})?$'
-          example: "94102"
-```
-```
+**Endpoints (8):**
+- GET    /parties/{id}/contacts           - Alle Kontakte
+- POST   /parties/{id}/contacts           - Kontakt hinzufügen
+- PUT    /parties/{id}/contacts/{cid}     - Kontakt aktualisieren
+- DELETE /parties/{id}/contacts/{cid}     - Kontakt löschen
+- GET    /parties/{id}/addresses          - Adressen
+- GET    /parties/{id}/phones             - Telefonnummern
+- GET    /parties/{id}/emails             - E-Mail-Adressen
+- POST   /parties/{id}/contacts/validate  - Kontakt validieren
 
-**Prompt 9: OpenAPI Spezifikation - Relationships & Batch**
-```
-Erweitere die OpenAPI Spezifikation um Relationships und Batch-Operationen:
+**Schemas:**
+- ContactMechDTO (mit discriminator)
+- PostalAddressDTO (extends ContactMechDTO)
+- TelecomNumberDTO (extends ContactMechDTO)
+- EmailAddressDTO (extends ContactMechDTO)
+- PartyContactMechDTO
 
-Füge hinzu zu: microservices/party-service/src/main/resources/openapi/party-service-api.yaml
+**Validierungsregeln:**
+- postalCode: pattern für PLZ (z.B. `^\d{5}(-\d{4})?$`)
+- contactNumber: pattern für Telefonnummern
+- email: format email
 
-Party Relationships Endpoints (6):
-   GET    /parties/{id}/relationships      - Beziehungen
-   POST   /parties/{id}/relationships      - Beziehung erstellen
-   DELETE /parties/{id}/relationships/{rid} - Beziehung löschen
-   GET    /relationships/types             - Beziehungstypen
-   GET    /parties/{id}/children           - Untergeordnete Parties
-   GET    /parties/{id}/parents            - Übergeordnete Parties
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 8
 
-Person & PartyGroup Endpoints (4):
-   POST   /persons              - Person erstellen
-   PUT    /persons/{id}         - Person aktualisieren
-   POST   /party-groups         - PartyGroup erstellen
-   PUT    /party-groups/{id}    - PartyGroup aktualisieren
+---
 
-Batch Operations Endpoints (4):
-   POST   /parties/batch        - Mehrere Parties erstellen
-   PUT    /parties/batch        - Mehrere Parties aktualisieren
-   POST   /parties/import       - Parties importieren (CSV/JSON)
-   GET    /parties/export       - Parties exportieren (CSV/JSON)
+### Aufgabe 3.3: OpenAPI Spezifikation - Relationships & Batch
 
-Schemas:
-   - PartyRelationshipDTO
-   - RelationshipTypeDTO
-   - BatchCreateRequest
-   - BatchUpdateRequest
-   - ImportRequest
-   - ExportResponse
+**Ziel:** REST API-Spezifikation für Relationships und Batch-Operationen erweitern.
 
-Gesamt: 30+ Endpoints
-```
+**Party Relationships Endpoints (6):**
+- GET    /parties/{id}/relationships      - Beziehungen
+- POST   /parties/{id}/relationships      - Beziehung erstellen
+- DELETE /parties/{id}/relationships/{rid} - Beziehung löschen
+- GET    /relationships/types             - Beziehungstypen
+- GET    /parties/{id}/children           - Untergeordnete Parties
+- GET    /parties/{id}/parents            - Übergeordnete Parties
+
+**Person & PartyGroup Endpoints (4):**
+- POST   /persons              - Person erstellen
+- PUT    /persons/{id}         - Person aktualisieren
+- POST   /party-groups         - PartyGroup erstellen
+- PUT    /party-groups/{id}    - PartyGroup aktualisieren
+
+**Batch Operations Endpoints (4):**
+- POST   /parties/batch        - Mehrere Parties erstellen
+- PUT    /parties/batch        - Mehrere Parties aktualisieren
+- POST   /parties/import       - Parties importieren (CSV/JSON)
+- GET    /parties/export       - Parties exportieren (CSV/JSON)
+
+**Schemas:**
+- PartyRelationshipDTO
+- RelationshipTypeDTO
+- BatchCreateRequest
+- BatchUpdateRequest
+- ImportRequest
+- ExportResponse
+
+**Gesamt:** 30+ Endpoints
+
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 9
 
 **Erwartetes Ergebnis:**
 - Vollständige OpenAPI 3.0 Spezifikation
@@ -444,22 +351,26 @@ Gesamt: 30+ Endpoints
 
 ---
 
-### Aufgabe 3.2: DTOs definieren
+### Aufgabe 3.4: Basis-DTOs erstellen
 
 **Ziel:** Java DTOs für API-Kommunikation erstellen.
 
-**Prompt 10: Basis-DTOs erstellen**
-```
-Erstelle die Basis-DTOs für den Party Service:
-
+**DTOs (7 Klassen):**
 1. PartyDTO.java (Abstract Base)
-   - Nutze Jackson für JSON-Serialisierung
-   - Nutze Bean Validation (@NotNull, @Size, etc.)
-   - Füge JavaDoc hinzu
-   - Implementiere equals/hashCode/toString
+2. PersonDTO.java (extends PartyDTO)
+3. PartyGroupDTO.java (extends PartyDTO)
+4. ContactMechDTO.java (Abstract Base)
+5. PostalAddressDTO.java (extends ContactMechDTO)
+6. TelecomNumberDTO.java (extends ContactMechDTO)
+7. EmailAddressDTO.java (extends ContactMechDTO)
 
-Datei: src/main/java/org/apache/ofbiz/party/microservice/application/dto/PartyDTO.java
+**Technologien:**
+- Lombok (@Data, @SuperBuilder, @NoArgsConstructor, @AllArgsConstructor)
+- Bean Validation (@NotNull, @Size, @NotBlank)
+- Jackson (@JsonTypeInfo, @JsonSubTypes für Polymorphismus)
+- JavaDoc für alle Klassen
 
+**Beispiel PartyDTO:**
 ```java
 package org.apache.ofbiz.party.microservice.application.dto;
 
@@ -471,7 +382,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
 import java.time.LocalDateTime;
 
 /**
@@ -515,34 +425,24 @@ public abstract class PartyDTO {
 }
 ```
 
-2. PersonDTO.java
-3. PartyGroupDTO.java
-4. ContactMechDTO.java (Abstract Base)
-5. PostalAddressDTO.java
-6. TelecomNumberDTO.java
-7. EmailAddressDTO.java
+**Verzeichnis:** `src/main/java/org/apache/ofbiz/party/microservice/application/dto/`
 
-Erstelle alle DTOs in:
-microservices/party-service/src/main/java/org/apache/ofbiz/party/microservice/application/dto/
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 10
 
-Best Practices:
-- Nutze Lombok (@Data, @SuperBuilder)
-- Nutze Bean Validation
-- Nutze Jackson Annotations für Polymorphismus
-- Füge JavaDoc hinzu
-```
+---
 
-**Prompt 11: Weitere DTOs erstellen**
-```
-Erstelle weitere DTOs für Rollen, Beziehungen und Responses:
+### Aufgabe 3.5: Weitere DTOs erstellen
 
+**Ziel:** DTOs für Rollen, Beziehungen und Responses erstellen.
+
+**DTOs (5 Klassen):**
 1. PartyRoleDTO.java
 2. PartyRelationshipDTO.java
 3. PartyContactMechDTO.java
 4. PagedResponseDTO.java (Generic)
 5. ErrorResponseDTO.java
 
-Beispiel PagedResponseDTO:
+**Beispiel PagedResponseDTO:**
 ```java
 package org.apache.ofbiz.party.microservice.application.dto;
 
@@ -550,7 +450,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 /**
@@ -574,9 +473,9 @@ public class PagedResponseDTO<T> {
 }
 ```
 
-Erstelle alle DTOs in:
-microservices/party-service/src/main/java/org/apache/ofbiz/party/microservice/application/dto/
-```
+**Verzeichnis:** `src/main/java/org/apache/ofbiz/party/microservice/application/dto/`
+
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 11
 
 **Erwartetes Ergebnis:**
 - ~12 DTO-Klassen
@@ -588,14 +487,11 @@ microservices/party-service/src/main/java/org/apache/ofbiz/party/microservice/ap
 
 ## Tag 4-5: Event-Schema & Test-Daten (1 Tag)
 
-### Aufgabe 4.1: Kafka Event-Schema definieren
+### Aufgabe 4.1: Kafka Event-DTOs erstellen
 
-**Ziel:** Event-Schema für asynchrone Kommunikation definieren.
+**Ziel:** Event-DTOs für Kafka-Publishing erstellen.
 
-**Prompt 12: Kafka Event-DTOs erstellen**
-```
-Erstelle Event-DTOs für Kafka-Publishing:
-
+**Events (8 Klassen):**
 1. PartyCreatedEvent.java
 2. PartyUpdatedEvent.java
 3. PartyDeletedEvent.java
@@ -605,7 +501,7 @@ Erstelle Event-DTOs für Kafka-Publishing:
 7. ContactMechUpdatedEvent.java
 8. PartyRelationshipCreatedEvent.java
 
-Basis-Struktur für Events:
+**Basis-Struktur:**
 ```java
 package org.apache.ofbiz.party.microservice.infrastructure.messaging.event;
 
@@ -613,7 +509,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 /**
@@ -625,34 +520,43 @@ import java.time.LocalDateTime;
 @Builder
 public class PartyCreatedEvent {
     
-    private String eventId;
+    private String eventId;           // UUID für Idempotenz
     private String partyId;
     private String partyType;
     private LocalDateTime timestamp;
     private String createdBy;
-    
-    // Optional: Full party data
-    private String payload; // JSON string
+    private String payload;           // Optional: JSON string für vollständige Daten
 }
 ```
 
-Best Practices:
+**Best Practices:**
 - Füge eventId (UUID) hinzu für Idempotenz
 - Füge timestamp hinzu
 - Füge correlation-ID hinzu für Tracing
 - Halte Events klein (nur IDs + wichtige Felder)
 - Optional: Füge payload für vollständige Daten hinzu
 
-Erstelle alle Events in:
-microservices/party-service/src/main/java/org/apache/ofbiz/party/microservice/infrastructure/messaging/event/
-```
+**Verzeichnis:** `src/main/java/org/apache/ofbiz/party/microservice/infrastructure/messaging/event/`
 
-**Prompt 13: Kafka Topics Konfiguration**
-```
-Definiere Kafka Topics in application.yml:
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 12
 
-Füge hinzu zu: src/main/resources/application.yml
+---
 
+### Aufgabe 4.2: Kafka Topics Konfiguration
+
+**Ziel:** Kafka Topics in application.yml definieren.
+
+**Topics:**
+- party.created
+- party.updated
+- party.deleted
+- party.role.assigned
+- party.role.removed
+- party.contact.added
+- party.contact.updated
+- party.relationship.created
+
+**Konfiguration:**
 ```yaml
 party:
   kafka:
@@ -672,17 +576,18 @@ party:
     retention-ms: 604800000  # 7 Tage
 ```
 
-Erstelle auch eine Dokumentation:
-microservices/party-service/docs/KAFKA_EVENTS.md
-
-Dokumentiere für jedes Event:
+**Dokumentation:**
+Erstelle `docs/KAFKA_EVENTS.md` mit:
 - Event-Name
 - Topic
 - Payload-Struktur
 - Wann wird es publiziert?
 - Wer konsumiert es?
-- Beispiel-Payload
-```
+- Beispiel-Payload (JSON)
+
+**Datei:** `src/main/resources/application.yml`
+
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 13
 
 **Erwartetes Ergebnis:**
 - 8 Event-DTO-Klassen
@@ -691,24 +596,21 @@ Dokumentiere für jedes Event:
 
 ---
 
-### Aufgabe 4.2: Test-Daten vorbereiten
+### Aufgabe 4.3: Test-Daten erstellen
 
-**Ziel:** Test-Daten für Entwicklung und Tests.
+**Ziel:** Test-Daten für Entwicklung und Tests erstellen.
 
-**Prompt 14: Test-Daten Migration erstellen**
-```
-Erstelle eine Flyway Migration mit Test-Daten:
+**Test-Daten:**
+1. 5 Personen (verschiedene Szenarien: aktiv, inaktiv, verschiedene Geschlechter)
+2. 3 PartyGroups (Firmen mit verschiedenen Größen)
+3. 10 Kontaktmechanismen:
+   - 4 Adressen (verschiedene Länder)
+   - 3 Telefonnummern (verschiedene Formate)
+   - 3 E-Mail-Adressen
+4. 5 Party-Rollen (verschiedene Rollen-Typen)
+5. 3 Party-Beziehungen (verschiedene Beziehungstypen)
 
-Datei: src/main/resources/db/migration/V99__test_data.sql
-
-Füge Test-Daten hinzu:
-1. 5 Personen (verschiedene Szenarien)
-2. 3 PartyGroups (Firmen)
-3. 10 Kontaktmechanismen (Adressen, Telefone, E-Mails)
-4. 5 Party-Rollen
-5. 3 Party-Beziehungen
-
-Beispiel:
+**Beispiel SQL:**
 ```sql
 -- Test Persons
 INSERT INTO party (party_id, party_type_id, status_id, created_date, created_by)
@@ -722,45 +624,20 @@ VALUES
     ('PERSON_001', 'John', 'Doe', 'M', '1980-01-15'),
     ('PERSON_002', 'Jane', 'Smith', 'F', '1985-05-20'),
     ('PERSON_003', 'Bob', 'Johnson', 'M', '1990-12-10');
-
--- Test PartyGroups
-INSERT INTO party (party_id, party_type_id, status_id, created_date, created_by)
-VALUES 
-    ('COMPANY_001', 'PARTY_GROUP', 'PARTY_ENABLED', CURRENT_TIMESTAMP, 'SYSTEM'),
-    ('COMPANY_002', 'PARTY_GROUP', 'PARTY_ENABLED', CURRENT_TIMESTAMP, 'SYSTEM');
-
-INSERT INTO party_group (party_id, group_name, annual_revenue, num_employees)
-VALUES 
-    ('COMPANY_001', 'Acme Corporation', 1000000.00, 50),
-    ('COMPANY_002', 'Tech Innovations Inc', 5000000.00, 200);
-
--- Test Addresses
-INSERT INTO contact_mech (contact_mech_id, contact_mech_type_id)
-VALUES 
-    ('ADDR_001', 'POSTAL_ADDRESS'),
-    ('ADDR_002', 'POSTAL_ADDRESS');
-
-INSERT INTO postal_address (contact_mech_id, address1, city, postal_code, country_geo_id)
-VALUES 
-    ('ADDR_001', '123 Main Street', 'San Francisco', '94102', 'USA'),
-    ('ADDR_002', '456 Oak Avenue', 'New York', '10001', 'USA');
-
--- Link Contacts to Parties
-INSERT INTO party_contact_mech (party_id, contact_mech_id, from_date)
-VALUES 
-    ('PERSON_001', 'ADDR_001', CURRENT_TIMESTAMP),
-    ('COMPANY_001', 'ADDR_002', CURRENT_TIMESTAMP);
 ```
 
-Hinweis: Diese Migration sollte nur im dev-Profil laufen!
+**Hinweis:** Diese Migration sollte nur im dev-Profil laufen!
 
-Konfiguriere in application-dev.yml:
+**Konfiguration in application-dev.yml:**
 ```yaml
 spring:
   flyway:
     locations: classpath:db/migration
 ```
-```
+
+**Datei:** `src/main/resources/db/migration/V99__test_data.sql`
+
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 14
 
 **Erwartetes Ergebnis:**
 - Test-Daten für Entwicklung
@@ -773,26 +650,26 @@ spring:
 
 ### Deliverables Woche 2
 
-**Dokumentation:**
+**Dokumentation (4 Dateien):**
 - ✅ PARTY_ENTITIES_ANALYSIS.md - Alle ~30 Tabellen dokumentiert
 - ✅ PARTY_ER_DIAGRAM.md - ER-Diagramm (Mermaid)
 - ✅ PARTY_DATA_MODEL.md - Datenmodell-Beschreibung
 - ✅ KAFKA_EVENTS.md - Event-Dokumentation
 
-**Datenbank:**
+**Datenbank (5 SQL-Dateien):**
 - ✅ V1__create_party_base_tables.sql
 - ✅ V2__create_contact_mech_tables.sql
 - ✅ V3__create_role_relationship_tables.sql
 - ✅ V4__create_indexes.sql
 - ✅ V99__test_data.sql (dev only)
 
-**API-Design:**
+**API-Design (1 YAML + ~20 Java-Klassen):**
 - ✅ party-service-api.yaml - OpenAPI 3.0 Spezifikation (30+ Endpoints)
 - ✅ ~12 DTO-Klassen (PartyDTO, PersonDTO, ContactMechDTO, etc.)
 - ✅ 8 Event-DTO-Klassen
 
 **Gesamt:**
-- ~20 Dateien erstellt
+- ~30 Dateien erstellt
 - ~2000 Zeilen Code/SQL/YAML
 - Vollständiges Datenmodell
 - Vollständige API-Spezifikation
@@ -835,21 +712,23 @@ spring:
 **4. Test-Daten prüfen:**
 ```sql
 -- In H2 Console
-SELECT COUNT(*) FROM party;  -- Sollte 5 sein
-SELECT COUNT(*) FROM person;  -- Sollte 3 sein
-SELECT COUNT(*) FROM party_group;  -- Sollte 2 sein
-SELECT COUNT(*) FROM postal_address;  -- Sollte 2 sein
+SELECT COUNT(*) FROM party;          -- Sollte 8 sein (5 Personen + 3 Firmen)
+SELECT COUNT(*) FROM person;         -- Sollte 5 sein
+SELECT COUNT(*) FROM party_group;    -- Sollte 3 sein
+SELECT COUNT(*) FROM postal_address; -- Sollte 4 sein
 ```
+
+**Prompt:** Siehe [`WOCHE_2_PROMPTS.md`](./WOCHE_2_PROMPTS.md) - Prompt 15
 
 ---
 
 ## Nächste Schritte (Woche 3)
 
 Nach Abschluss von Woche 2 folgt Woche 3:
-- JPA Entities implementieren
-- Repositories erstellen
-- Core Services implementieren
-- Unit Tests schreiben
+- JPA Entities implementieren (basierend auf Flyway Migrations)
+- Repositories erstellen (Spring Data JPA)
+- Core Services implementieren (PartyService, ContactMechService)
+- Unit Tests schreiben (>80% Coverage)
 
 **Vorbereitung:**
 - Datenmodell verstanden ✅
@@ -900,24 +779,25 @@ Nach Abschluss von Woche 2 folgt Woche 3:
 
 ## Fragen & Antworten
 
-**Q: Warum Flyway statt Liquibase?**
+**Q: Warum Flyway statt Liquibase?**  
 A: Flyway ist einfacher, SQL-basiert, und gut für PostgreSQL geeignet.
 
-**Q: Warum OpenAPI 3.0 statt Swagger 2.0?**
+**Q: Warum OpenAPI 3.0 statt Swagger 2.0?**  
 A: OpenAPI 3.0 ist der aktuelle Standard, besser strukturiert, mehr Features.
 
-**Q: Warum DTOs statt direkt Entities?**
+**Q: Warum DTOs statt direkt Entities?**  
 A: DTOs entkoppeln API von Datenmodell, ermöglichen Versionierung, bessere Kontrolle.
 
-**Q: Warum Kafka Events?**
+**Q: Warum Kafka Events?**  
 A: Asynchrone Kommunikation, Entkopplung, Event Sourcing, Audit-Trail.
 
-**Q: Wie viele Tabellen werden migriert?**
+**Q: Wie viele Tabellen werden migriert?**  
 A: ~30 Tabellen aus OFBiz Party-Modul, priorisiert nach Wichtigkeit.
 
 ---
 
 **Erstellt:** 2026-01-21  
+**Aktualisiert:** 2026-01-23  
 **Autor:** Roo AI (Party-PoC Mode)  
-**Version:** 1.0  
+**Version:** 2.0  
 **Status:** Bereit zur Implementierung
