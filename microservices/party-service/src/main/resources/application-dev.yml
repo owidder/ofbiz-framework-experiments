@@ -1,58 +1,72 @@
-# Party Service - Development Profile Configuration
+# Party Service - Development Profile Configuration (Derby PoC)
 # =============================================================================
-# This profile is used for local development
+# This profile is used for PoC with OFBiz Derby database
 
 spring:
-  # Database Configuration (H2 for local development)
+  # Database Configuration (Derby - OFBiz)
   datasource:
-    url: jdbc:h2:mem:partydb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
-    username: sa
-    password: 
-    driver-class-name: org.h2.Driver
+    url: jdbc:derby:/Users/oliverwidder/dev/ofbiz/runtime/data/derby/ofbiz;create=false
+    username: ofbiz
+    password: ofbiz
+    driver-class-name: org.apache.derby.jdbc.EmbeddedDriver
     hikari:
       maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: PartyServiceDerbyPool
   
   # JPA Configuration
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.DerbyDialect
     hibernate:
-      ddl-auto: create-drop  # Auto-create schema for development
+      ddl-auto: none  # WICHTIG: Keine Schema-Änderungen an OFBiz DB!
+      naming:
+        # Derby verwendet UPPERCASE Tabellennamen (PARTY, PERSON, etc.)
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-  
-  # H2 Console
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-      settings:
-        web-allow-others: true
+        use_sql_comments: true
+        # Derby-spezifische Optimierungen
+        jdbc:
+          batch_size: 10
+        order_inserts: true
+        order_updates: true
   
   # Flyway Configuration
   flyway:
-    enabled: false  # Disabled for H2 in-memory development
+    enabled: false  # Deaktiviert für PoC - nutzt existierendes OFBiz Schema
   
   # Cache Configuration (Simple in-memory cache for development)
   cache:
     type: simple
   
-  # Redis Configuration (disabled for local development)
+  # Redis Configuration (disabled for PoC)
   data:
     redis:
       host: localhost
       port: 6379
   
-  # Kafka Configuration (embedded or local)
+  # Kafka Configuration (disabled for PoC)
   kafka:
     bootstrap-servers: localhost:9092
 
 # Server Configuration
 server:
-  port: 8081
+  port: 8081  # Vermeidet Konflikt mit OFBiz (8080/8443)
+  servlet:
+    context-path: /api/party
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
   error:
+    include-message: always
+    include-binding-errors: always
     include-stacktrace: always
+    include-exception: true
 
 # Management & Actuator Configuration
 management:
@@ -60,9 +74,21 @@ management:
     web:
       exposure:
         include: "*"  # Expose all endpoints in development
+      base-path: /actuator
   endpoint:
     health:
       show-details: always
+      probes:
+        enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+  health:
+    db:
+      enabled: true
 
 # Logging Configuration
 logging:
@@ -71,34 +97,72 @@ logging:
     org.apache.ofbiz.party: DEBUG
     org.springframework.web: DEBUG
     org.springframework.data: DEBUG
+    org.springframework.jdbc.core: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.springframework.cache: DEBUG
+    # Derby-spezifisches Logging
+    org.apache.derby: INFO
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+  file:
+    name: logs/party-service-dev.log
+    max-size: 10MB
+    max-history: 7
 
 # OpenAPI / Swagger Configuration
 springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
   api-docs:
     enabled: true
+    path: /api-docs
+  show-actuator: true
 
 # Application-Specific Configuration
 party-service:
-  # Feature Flags (all enabled for development)
+  # Feature Flags (minimal for PoC)
   features:
-    dual-write-enabled: false
-    ofbiz-integration-enabled: false
-    event-publishing-enabled: false  # Disabled to avoid Kafka dependency
+    dual-write-enabled: false  # Nicht für PoC
+    ofbiz-integration-enabled: false  # Nicht für PoC
+    event-publishing-enabled: false  # Nicht für PoC - vermeidet Kafka-Abhängigkeit
   
-  # OFBiz Integration
+  # OFBiz Integration (für spätere Phasen)
   ofbiz:
     base-url: http://localhost:8080
-    timeout: 10000  # Longer timeout for debugging
+    timeout: 10000  # Längeres Timeout für Debugging
   
-  # Development-specific settings
-  dev:
-    auto-create-test-data: true
-    reset-on-startup: true
+  # PoC-spezifische Einstellungen
+  poc:
+    read-only-mode: true  # Nur Lese-Operationen für PoC
+    auto-create-test-data: false  # Nutzt existierende OFBiz Demo-Daten
+    
+  # Cache Configuration
+  cache:
+    party-ttl: 3600  # 1 hour
+    role-ttl: 7200   # 2 hours
+    contact-ttl: 1800  # 30 minutes
+
+# Derby-spezifische Hinweise
+# =============================================================================
+# WICHTIG: Derby Embedded Mode erlaubt nur EINE Verbindung!
+# 
+# Vor dem Start des Party-Service:
+# 1. OFBiz stoppen (Ctrl+C im Terminal)
+# 2. Warten bis Derby-Verbindung geschlossen ist (ca. 5 Sekunden)
+# 3. Party-Service starten
+#
+# Derby-Datenbank Pfad:
+# /Users/oliverwidder/dev/ofbiz/runtime/data/derby/ofbiz/
+#
+# Tabellennamen in Derby:
+# - PARTY (nicht party)
+# - PERSON (nicht person)
+# - PARTY_GROUP (nicht party_group)
+# - etc.
+#
+# Alle Tabellennamen sind UPPERCASE!
+# =============================================================================

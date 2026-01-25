@@ -1,5 +1,11 @@
 # Party Service - Main Configuration
 # =============================================================================
+#
+# Dieses ist die Basis-Konfiguration für den Party-Service.
+# Profil-spezifische Konfigurationen befinden sich in:
+# - application-dev.yml (Development mit Derby PoC)
+# - application-test.yml (Testing)
+# - application-prod.yml (Production - noch nicht erstellt)
 
 spring:
   application:
