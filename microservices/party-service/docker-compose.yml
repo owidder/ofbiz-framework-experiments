@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: party-service-db
+    environment:
+      POSTGRES_DB: party_db
+      POSTGRES_USER: party_user
+      POSTGRES_PASSWORD: party_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - party_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U party_user -d party_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - party-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: party-service-cache
+    ports:
+      - "6380:6379"
+    volumes:
+      - party_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - party-network
+
+volumes:
+  party_postgres_data:
+  party_redis_data:
+
+networks:
+  party-network:
+    driver: bridge
