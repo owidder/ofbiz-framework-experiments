@@ -8,7 +8,7 @@
 CREATE TABLE party_type (
     party_type_id VARCHAR(20) PRIMARY KEY,
     parent_type_id VARCHAR(20),
-    has_table CHAR(1),
+    has_table VARCHAR(1),
     description VARCHAR(255),
     CONSTRAINT fk_party_type_parent FOREIGN KEY (parent_type_id) REFERENCES party_type(party_type_id)
 );
@@ -28,7 +28,7 @@ CREATE TABLE party (
     last_modified_date TIMESTAMP,
     last_modified_by_user_login VARCHAR(255),
     data_source_id VARCHAR(20),
-    is_unread CHAR(1),
+    is_unread VARCHAR(1),
     CONSTRAINT fk_party_type FOREIGN KEY (party_type_id) REFERENCES party_type(party_type_id)
 );
 
@@ -53,7 +53,7 @@ CREATE TABLE person (
     last_name_local VARCHAR(100),
     other_local VARCHAR(100),
     member_id VARCHAR(20),
-    gender CHAR(1),
+    gender VARCHAR(1),
     birth_date DATE,
     deceased_date DATE,
     height DOUBLE PRECISION,
@@ -68,9 +68,9 @@ CREATE TABLE person (
     employment_status_enum_id VARCHAR(20),
     residence_status_enum_id VARCHAR(20),
     occupation VARCHAR(100),
-    years_with_employer NUMERIC,
-    months_with_employer NUMERIC,
-    existing_customer CHAR(1),
+    years_with_employer INTEGER,
+    months_with_employer INTEGER,
+    existing_customer VARCHAR(1),
     card_id VARCHAR(60),
     CONSTRAINT fk_person_party FOREIGN KEY (party_id) REFERENCES party(party_id)
 );
@@ -88,7 +88,7 @@ CREATE TABLE party_group (
     group_name_local VARCHAR(100),
     office_site_name VARCHAR(100),
     annual_revenue NUMERIC(18,2),
-    num_employees NUMERIC,
+    num_employees INTEGER,
     ticker_symbol VARCHAR(10),
     comments VARCHAR(255),
     logo_image_url VARCHAR(2000),
@@ -103,7 +103,7 @@ CREATE INDEX idx_party_group_name ON party_group(group_name);
 CREATE TABLE contact_mech_type (
     contact_mech_type_id VARCHAR(20) PRIMARY KEY,
     parent_type_id VARCHAR(20),
-    has_table CHAR(1),
+    has_table VARCHAR(1),
     description VARCHAR(255),
     CONSTRAINT fk_contact_mech_type_parent FOREIGN KEY (parent_type_id) REFERENCES contact_mech_type(contact_mech_type_id)
 );
@@ -130,7 +130,7 @@ CREATE TABLE postal_address (
     attn_name VARCHAR(100),
     address1 TEXT,
     address2 TEXT,
-    house_number NUMERIC,
+    house_number INTEGER,
     house_number_ext VARCHAR(60),
     directions TEXT,
     city VARCHAR(100),
@@ -169,7 +169,7 @@ CREATE INDEX idx_telecom_contact_number ON telecom_number(contact_number);
 CREATE TABLE role_type (
     role_type_id VARCHAR(20) PRIMARY KEY,
     parent_type_id VARCHAR(20),
-    has_table CHAR(1),
+    has_table VARCHAR(1),
     description VARCHAR(255),
     CONSTRAINT fk_role_type_parent FOREIGN KEY (parent_type_id) REFERENCES role_type(role_type_id)
 );
@@ -191,7 +191,7 @@ CREATE TABLE party_role (
 CREATE TABLE contact_mech_purpose_type (
     contact_mech_purpose_type_id VARCHAR(20) PRIMARY KEY,
     parent_type_id VARCHAR(20),
-    has_table CHAR(1),
+    has_table VARCHAR(1),
     description VARCHAR(255)
 );
 
@@ -204,12 +204,12 @@ CREATE TABLE party_contact_mech (
     from_date TIMESTAMP,
     thru_date TIMESTAMP,
     role_type_id VARCHAR(20),
-    allow_solicitation CHAR(1),
+    allow_solicitation VARCHAR(1),
     extension TEXT,
-    verified CHAR(1),
+    verified VARCHAR(1),
     comments VARCHAR(255),
-    years_with_contact_mech NUMERIC,
-    months_with_contact_mech NUMERIC,
+    years_with_contact_mech INTEGER,
+    months_with_contact_mech INTEGER,
     PRIMARY KEY (party_id, contact_mech_id, from_date),
     CONSTRAINT fk_party_contact_mech_party FOREIGN KEY (party_id) REFERENCES party(party_id),
     CONSTRAINT fk_party_contact_mech_cm FOREIGN KEY (contact_mech_id) REFERENCES contact_mech(contact_mech_id),

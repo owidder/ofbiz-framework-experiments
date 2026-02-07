@@ -60,9 +60,6 @@ dependencies {
     implementation 'org.flywaydb:flyway-core:10.4.1'
     runtimeOnly 'org.flywaydb:flyway-database-postgresql:10.4.1'
     
-    // Redis Cache
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    
     // Kafka (optional for event-driven communication)
     implementation 'org.springframework.kafka:spring-kafka'
     

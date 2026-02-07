@@ -13,7 +13,7 @@ spring:
   
   # Profile Configuration
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
+    active: ${SPRING_PROFILES_ACTIVE:local}
   
   # Database Configuration (PostgreSQL)
   datasource:
@@ -54,25 +54,9 @@ spring:
     table: flyway_schema_history
     validate-on-migrate: true
   
-  # Cache Configuration (Redis)
+  # Cache Configuration (In-Memory)
   cache:
-    type: redis
-    redis:
-      time-to-live: 3600000  # 1 hour in milliseconds
-      cache-null-values: false
-  
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6380}
-      password: ${REDIS_PASSWORD:}
-      timeout: 2000ms
-      lettuce:
-        pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 2
-          max-wait: -1ms
+    type: simple
   
   # Kafka Configuration
   kafka:
@@ -123,8 +107,6 @@ management:
     tags:
       application: ${spring.application.name}
   health:
-    redis:
-      enabled: true
     db:
       enabled: true
 

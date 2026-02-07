@@ -15,28 +15,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - party-network
-
-  redis:
-    image: redis:7-alpine
-    container_name: party-service-cache
-    ports:
-      - "6380:6379"
-    volumes:
-      - party_redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - party-network
 
 volumes:
   party_postgres_data:
-  party_redis_data:
-
-networks:
-  party-network:
-    driver: bridge
