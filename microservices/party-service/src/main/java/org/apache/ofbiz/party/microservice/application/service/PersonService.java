@@ -8,6 +8,10 @@ import org.apache.ofbiz.party.microservice.api.mapper.PersonMapper;
 import org.apache.ofbiz.party.microservice.domain.entity.Person;
 import org.apache.ofbiz.party.microservice.domain.entity.PartyType;
 import org.apache.ofbiz.party.microservice.domain.repository.PersonRepository;
+import org.apache.ofbiz.party.microservice.infrastructure.kafka.PartyEventPublisher;
+import org.apache.ofbiz.party.microservice.infrastructure.kafka.event.PersonCreatedEvent;
+import org.apache.ofbiz.party.microservice.infrastructure.kafka.event.PersonDeletedEvent;
+import org.apache.ofbiz.party.microservice.infrastructure.kafka.event.PersonUpdatedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,7 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final PersonMapper personMapper;
     private final EntityManager entityManager;
+    private final PartyEventPublisher eventPublisher;
 
     public List<PersonDto> findAll() {
         log.debug("Finding all persons");
@@ -60,6 +65,17 @@ public class PersonService {
         Person saved = personRepository.save(person);
         log.info("Created person with id: {}", saved.getPartyId());
 
+        // Publish event
+        eventPublisher.publish(new PersonCreatedEvent(
+                saved.getPartyId(),
+                saved.getFirstName(),
+                saved.getLastName(),
+                saved.getMiddleName(),
+                saved.getGender(),
+                saved.getBirthDate(),
+                saved.getStatusId()
+        ));
+
         return personMapper.toDto(saved);
     }
 
@@ -74,6 +90,17 @@ public class PersonService {
         Person saved = personRepository.save(person);
 
         log.info("Updated person: {}", partyId);
+
+        // Publish event
+        eventPublisher.publish(new PersonUpdatedEvent(
+                saved.getPartyId(),
+                saved.getFirstName(),
+                saved.getLastName(),
+                saved.getMiddleName(),
+                saved.getGender(),
+                saved.getBirthDate()
+        ));
+
         return personMapper.toDto(saved);
     }
 
@@ -87,6 +114,9 @@ public class PersonService {
 
         personRepository.deleteById(partyId);
         log.info("Deleted person: {}", partyId);
+
+        // Publish event
+        eventPublisher.publish(new PersonDeletedEvent(partyId));
     }
 
     private String generatePartyId() {

@@ -1,0 +1,41 @@
+# OFBiz Sync Service Configuration
+# =============================================================================
+# This service consumes Kafka events from Party-Service and syncs to OFBiz
+
+spring:
+  application:
+    name: ofbiz-sync-service
+
+  # OFBiz Derby Database (Network Server Mode)
+  datasource:
+    url: jdbc:derby://localhost:1527/ofbiz
+    username: ofbiz
+    password: ofbiz
+    driver-class-name: org.apache.derby.jdbc.ClientDriver
+
+  # Kafka Consumer Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: ofbiz-sync-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: org.apache.ofbiz.sync.event.PartyEvent
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    org.apache.ofbiz.sync: DEBUG
+    org.springframework.kafka: INFO
+
+# Application-Specific Configuration
+ofbiz-sync:
+  kafka:
+    topics:
+      party-events: party.events
+  enabled: true
