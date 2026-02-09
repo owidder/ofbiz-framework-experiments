@@ -25,7 +25,11 @@ plugins {
 
 group = 'org.apache.ofbiz.microservices'
 version = '1.0.0-SNAPSHOT'
-sourceCompatibility = '17'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
 configurations {
     compileOnly {

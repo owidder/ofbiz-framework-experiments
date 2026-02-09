@@ -8,6 +8,7 @@ import org.apache.ofbiz.party.microservice.api.mapper.PartyGroupMapper;
 import org.apache.ofbiz.party.microservice.domain.entity.PartyGroup;
 import org.apache.ofbiz.party.microservice.domain.entity.PartyType;
 import org.apache.ofbiz.party.microservice.domain.repository.PartyGroupRepository;
+import org.apache.ofbiz.party.microservice.infrastructure.kafka.PartySnapshotPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class PartyGroupService {
     private final PartyGroupRepository partyGroupRepository;
     private final PartyGroupMapper partyGroupMapper;
     private final EntityManager entityManager;
+    private final PartySnapshotPublisher snapshotPublisher;
 
     public List<PartyGroupDto> findAll() {
         log.debug("Finding all party groups");
@@ -55,6 +57,9 @@ public class PartyGroupService {
         PartyGroup saved = partyGroupRepository.save(partyGroup);
         log.info("Created party group with id: {}", saved.getPartyId());
 
+        // Publish snapshot to compacted topic
+        snapshotPublisher.publishSnapshot(saved);
+
         return partyGroupMapper.toDto(saved);
     }
 
@@ -69,6 +74,10 @@ public class PartyGroupService {
         PartyGroup saved = partyGroupRepository.save(partyGroup);
 
         log.info("Updated party group: {}", partyId);
+
+        // Publish snapshot to compacted topic
+        snapshotPublisher.publishSnapshot(saved);
+
         return partyGroupMapper.toDto(saved);
     }
 
@@ -82,6 +91,9 @@ public class PartyGroupService {
 
         partyGroupRepository.deleteById(partyId);
         log.info("Deleted party group: {}", partyId);
+
+        // Publish tombstone to compacted topic (signals deletion)
+        snapshotPublisher.publishTombstone(partyId);
     }
 
     private String generatePartyId() {

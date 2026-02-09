@@ -1,6 +1,7 @@
 # OFBiz Sync Service Configuration
 # =============================================================================
-# This service consumes Kafka events from Party-Service and syncs to OFBiz
+# This service consumes party snapshots from the compacted Kafka topic
+# and syncs to OFBiz Derby database
 
 spring:
   application:
@@ -23,8 +24,7 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
-        spring.json.use.type.headers: false
-        spring.json.value.default.type: org.apache.ofbiz.sync.event.PartyEvent
+        spring.json.use.type.headers: true
 
 # Logging Configuration
 logging:
@@ -37,5 +37,5 @@ logging:
 ofbiz-sync:
   kafka:
     topics:
-      party-events: party.events
+      party-entities: party.entities
   enabled: true
