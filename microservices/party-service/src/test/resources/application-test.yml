@@ -1,0 +1,29 @@
+# Test Configuration
+# Wird automatisch von Testcontainers überschrieben
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+logging:
+  level:
+    root: WARN
+    org.apache.ofbiz.party: INFO
+    org.testcontainers: INFO
+
+party-service:
+  kafka:
+    topics:
+      party-entities: party.entities
