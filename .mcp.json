@@ -11,6 +11,17 @@
         "NEO4J_USER": "neo4j",
         "NEO4J_PASSWORD": "neo4j"
       }
+    },
+    "qdrant": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "/Users/oliverwidder/Documents/Cline/MCP/qdrant-server/index.js"
+      ],
+      "env": {
+        "QDRANT_URL": "http://localhost:6333",
+        "COLLECTION_NAME": "ofbiz-code"
+      }
     }
   }
 }
